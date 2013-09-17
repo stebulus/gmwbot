@@ -1,0 +1,16 @@
+#!/bin/bash
+WORK=testwork
+set -o pipefail
+failct=0
+while [ $# -gt 0 ]; do
+    D=$WORK/"$1"
+    echo "$D"
+    rm -rf $D
+    cp --parents -R "$1" $WORK
+    if ! D="$D" PYTHONPATH=. "$D"/script |diff -u "$D"/expected -; then
+        failct=$((failct+1))
+        echo "[FAILED] $D"
+    fi
+    shift
+done
+exit $failct

@@ -17,3 +17,13 @@ class binarysearcher(object):
                 lft = mid
         else:
             return None
+
+def p(x):
+    print x
+class cmpword(object):
+    def __init__(self, word, callback=p):
+        self._word = word
+        self._callback = callback
+    def __cmp__(self, other):
+        self._callback(other)
+        return cmp(self._word, other)

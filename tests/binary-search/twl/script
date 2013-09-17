@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+import gmwbot
+
+words = []
+with open('twl') as twl:
+    for line in twl:
+        words.append(line.rstrip())
+search = gmwbot.binarysearcher(words)
+for word in ['taco', 'orrery', 'alibaba']:
+    print 'Searching for', repr(word)
+    result = search(gmwbot.cmpword(word))
+    print 'result:', result
+    print

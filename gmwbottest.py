@@ -45,3 +45,13 @@ class mockhttpresponse(object):
             ret = self._body[:amt]
             self._body = self._body[amt:]
             return ret
+
+def dumpresponse(app, method, url):
+    conn = mockhttpconn(app)
+    conn.request(method, url)
+    resp = conn.getresponse()
+    print resp.status, resp.reason
+    for hdr, val in resp.getheaders():
+        print hdr + ':', val
+    print
+    print resp.read(),

@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+import gmwbottest
+def app(environ, start_response):
+    start_response("200 OK", [])
+    return ['abc', 'def\n']
+conn = gmwbottest.mockhttpconn(app)
+conn.request("GET", "/")
+resp = conn.getresponse()
+print resp.status, resp.reason
+for hdr, val in resp.getheaders():
+    print hdr + ':', val
+print
+print resp.read(),

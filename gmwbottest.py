@@ -10,6 +10,9 @@ class mockhttpconn(object):
             self._response.status = code
             self._response.reason = reason
             self._response._headers = headers
+            def write(data):
+                body.append(data)
+            return write
         body = []
         for chunk in self._app(environ, start_response):
             body.append(chunk)

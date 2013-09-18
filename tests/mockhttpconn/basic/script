@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import gmwbottest
 def app(environ, start_response):
-    start_response("200 OK", [])
+    start_response("200 OK", [('X-Header1', 'Value1'), ('X-Header2', 'Value2')])
     return ['abc', 'def\n']
 conn = gmwbottest.mockhttpconn(app)
 conn.request("GET", "/")

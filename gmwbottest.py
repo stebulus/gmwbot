@@ -9,9 +9,7 @@ class mockhttpconn(object):
             code, reason = status.split(None, 1)
             self._response.status = code
             self._response.reason = reason
-            self._response._headers = {}
-            for k,v in headers:
-                self._response._headers[k] = v
+            self._response._headers = headers
         body = []
         for chunk in self._app(environ, start_response):
             body.append(chunk)
@@ -23,7 +21,7 @@ class mockhttpconn(object):
 
 class mockhttpresponse(object):
     def getheaders(self):
-        return self._headers.items()
+        return self._headers[:]
     def read(self, amt=None):
         if amt is None:
             return self._body

@@ -4,6 +4,17 @@ class mockhttpconn(object):
         self._app = app
     def request(self, method, url):
         environ = {
+            'REQUEST_METHOD': method,
+            'SCRIPT_NAME': '',
+            'PATH_INFO': url,
+            'SERVER_NAME': 'example.com',
+            'SERVER_PORT': '80',
+            'SERVER_PROTOCOL': 'HTTP/1.1',
+            'wsgi.version': (1,0),
+            'wsgi.url_scheme': 'mock',
+            'wsgi.multithread': False,
+            'wsgi.multiprocess': False,
+            'wsgi.run_once': False,
             }
         self._response = mockhttpresponse()
         def start_response(status, headers):

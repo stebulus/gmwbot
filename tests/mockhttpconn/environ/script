@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+import gmwbottest
+
+def echo_environ(environ, start_response):
+    items = environ.items()
+    items.sort()
+    start_response("200 OK", [])
+    for hdr,val in items:
+        if hdr not in ['wsgi.input', 'wsgi.errors']:
+            yield hdr + ': ' + str(val) + '\n'
+conn = gmwbottest.mockhttpconn(echo_environ)
+conn.request("GET", "/")
+resp = conn.getresponse()
+print resp.status, resp.reason
+for hdr, val in resp.getheaders():
+    print hdr + ':', val
+print
+print resp.read(),

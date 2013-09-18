@@ -55,3 +55,22 @@ def dumpresponse(app, method, url):
         print hdr + ':', val
     print
     print resp.read(),
+
+_MOCKGMW_FIRSTFORM = """\
+<p>This is a crude imitation of the Guess My Word CGI program.</p>
+<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+<div align="center">What is your guess?
+<input type="text" name="guess" size="15" maxlength="15">
+<input type="submit" value="Guess">
+<input type="submit" name="result" value="I give up! Tell me!" value="no">
+</div>
+<input type="hidden" name="by" value="joon">
+<input type="hidden" name="date" value="">
+<input type="hidden" name="starttime" value="">
+</form>
+"""
+def mockgmw(environ, start_response):
+    """A WSGI application imitating "Guess my word!", for testing purposes."""
+    if environ['REQUEST_METHOD'] == 'GET':
+        start_response("200 OK", [])
+        return [_MOCKGMW_FIRSTFORM]

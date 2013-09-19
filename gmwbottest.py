@@ -4,7 +4,7 @@ class mockhttpconn(object):
     """Mock of httplib.HTTPConnection, hosting a WSGI application."""
     def __init__(self, app):
         self._app = app
-    def request(self, method, url, body=None):
+    def request(self, method, url, body=None, headers=None):
         environ = {
             'REQUEST_METHOD': method,
             'SCRIPT_NAME': '',
@@ -21,6 +21,10 @@ class mockhttpconn(object):
         if body is None:
             body = ''
         environ['wsgi.input'] = StringIO(body)
+        if headers is not None:
+            for k,v in headers.items():
+                k = 'HTTP_' + k.replace('-', '_').upper()
+                environ[k] = environ.get(k,'') + v
         self._response = mockhttpresponse()
         def start_response(status, headers):
             code, reason = status.split(None, 1)
@@ -51,9 +55,9 @@ class mockhttpresponse(object):
             self._body = self._body[amt:]
             return ret
 
-def dumpresponse(app, method, url, body=None):
+def dumpresponse(app, method, url, body=None, headers=None):
     conn = mockhttpconn(app)
-    conn.request(method, url, body)
+    conn.request(method, url, body, headers)
     resp = conn.getresponse()
     print resp.status, resp.reason
     for hdr, val in resp.getheaders():

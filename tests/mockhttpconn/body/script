@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+import gmwbottest
+
+def echo_body(environ, start_response):
+    start_response("200 OK", [])
+    yield environ['wsgi.input'].read()
+gmwbottest.dumpresponse(echo_body, "POST", "/", "body body body")

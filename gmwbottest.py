@@ -1,8 +1,10 @@
+from StringIO import StringIO
+
 class mockhttpconn(object):
     """Mock of httplib.HTTPConnection, hosting a WSGI application."""
     def __init__(self, app):
         self._app = app
-    def request(self, method, url):
+    def request(self, method, url, body=None):
         environ = {
             'REQUEST_METHOD': method,
             'SCRIPT_NAME': '',
@@ -16,6 +18,9 @@ class mockhttpconn(object):
             'wsgi.multiprocess': False,
             'wsgi.run_once': False,
             }
+        if body is None:
+            body = ''
+        environ['wsgi.input'] = StringIO(body)
         self._response = mockhttpresponse()
         def start_response(status, headers):
             code, reason = status.split(None, 1)
@@ -46,9 +51,9 @@ class mockhttpresponse(object):
             self._body = self._body[amt:]
             return ret
 
-def dumpresponse(app, method, url):
+def dumpresponse(app, method, url, body=None):
     conn = mockhttpconn(app)
-    conn.request(method, url)
+    conn.request(method, url, body)
     resp = conn.getresponse()
     print resp.status, resp.reason
     for hdr, val in resp.getheaders():

@@ -1,3 +1,6 @@
+Action: /~pahk/dictionary/guess.cgi
+Method: POST
+
 text guess None
 submit None 'Guess'
 submit result 'no'

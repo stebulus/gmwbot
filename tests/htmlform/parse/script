@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import gmwbot
 
-controls = gmwbot.parsecontrols("""\
+form = gmwbot.htmlform.fromstr("""\
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">
@@ -27,5 +27,8 @@ controls = gmwbot.parsecontrols("""\
 <input type="hidden" name="upper" value="scuffle">
 <input type="hidden" name="lower" value="scrotum">
 </form>""")
-for typ,nam,val in controls:
+print 'Action:', form.action
+print 'Method:', form.method
+print
+for typ,nam,val in form.controls:
     print typ, nam, repr(val)

@@ -33,7 +33,15 @@ class HTMLFormParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self.controls = []
+        self.method = 'GET'
     def handle_starttag(self, tag, attrs):
+        if tag == 'form':
+            for n,v in attrs:
+                n = n.lower()
+                if n == 'action':
+                    self.action = v
+                elif n == 'method':
+                    self.method = v.upper()
         if tag == 'input':
             typ = None
             nam = None
@@ -48,8 +56,15 @@ class HTMLFormParser(HTMLParser):
                     val = v
             self.controls.append((typ,nam,val))
 
-def parsecontrols(data):
-    parser = HTMLFormParser()
-    parser.feed(data)
-    parser.close()
-    return parser.controls
+class htmlform(object):
+    @classmethod
+    def fromstr(cls, s):
+        parser = HTMLFormParser()
+        parser.feed(s)
+        parser.close()
+        return cls(parser.action, parser.method, parser.controls)
+
+    def __init__(self, action, method, controls):
+        self.action = action
+        self.method = method
+        self.controls = controls

@@ -1,0 +1,14 @@
+200 OK
+
+<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+<div align="center">What is your guess?
+<input type="text" name="guess" size="15" maxlength="15">
+<input type="submit" value="Guess">
+<input type="submit" name="result" value="I give up! Tell me!" value="no">
+</div>
+<input type="hidden" name="by" value="joon">
+<input type="hidden" name="date" value="">
+<input type="hidden" name="starttime" value="1379615137">
+<input type="hidden" name="guesses" value="lunisolar">
+<input type="hidden" name="lower" value="lunisolar">
+</form>

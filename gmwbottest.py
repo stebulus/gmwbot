@@ -1,4 +1,5 @@
 from StringIO import StringIO
+from urlparse import parse_qsl
 
 class mockhttpconn(object):
     """Mock of httplib.HTTPConnection, hosting a WSGI application."""
@@ -78,8 +79,31 @@ _MOCKGMW_FIRSTFORM = """\
 <input type="hidden" name="starttime" value="">
 </form>
 """
+_MOCKGMW_FIRSTPOST = """\
+<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+<div align="center">What is your guess?
+<input type="text" name="guess" size="15" maxlength="15">
+<input type="submit" value="Guess">
+<input type="submit" name="result" value="I give up! Tell me!" value="no">
+</div>
+<input type="hidden" name="by" value="joon">
+<input type="hidden" name="date" value="">
+<input type="hidden" name="starttime" value="1379615137">
+<input type="hidden" name="guesses" value="%(guess)s">
+<input type="hidden" name="lower" value="%(guess)s">
+</form>
+"""
 def mockgmw(environ, start_response):
     """A WSGI application imitating "Guess my word!", for testing purposes."""
     if environ['REQUEST_METHOD'] == 'GET':
         start_response("200 OK", [])
         return [_MOCKGMW_FIRSTFORM]
+    elif environ['REQUEST_METHOD'] == 'POST':
+        dataset = parse_qsl(environ['wsgi.input'].read())
+        for k,v in dataset:
+            if k == 'guess':
+                start_response('200 OK', [])
+                return [_MOCKGMW_FIRSTPOST % {'guess': v}]
+        else:
+            start_response('400 No guess supplied', [])
+            return []

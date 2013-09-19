@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+import gmwbot
+import gmwbottest
+
+form = gmwbot.htmlform('/action', 'GET',
+    [
+        ('text', 'loud', 'huzzah'),
+        ('submit', None, 'Yes'),
+        ('hidden', 'shy', 'a'),
+    ])
+print repr(form.submit())

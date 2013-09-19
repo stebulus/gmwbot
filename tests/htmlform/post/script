@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+import gmwbot
+import gmwbottest
+
+form = gmwbot.htmlform('/action', 'POST',
+    [
+        ('text', 'loud', 'huzzah'),
+        ('submit', None, 'Yes'),
+        ('hidden', 'shy', 'a'),
+    ])
+def echo_hdrbody(environ, start_response):
+    start_response("200 OK", [])
+    for k,v in environ.items():
+        if k.startswith("HTTP_"):
+            yield k[5:] + ': ' + v + '\n'
+    yield '\n'
+    yield environ['wsgi.input'].read()
+gmwbottest.dumpresponse(echo_hdrbody, *form.submit())

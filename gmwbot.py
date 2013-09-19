@@ -1,5 +1,6 @@
 from __future__ import division
 from HTMLParser import HTMLParser
+from urllib import urlencode
 
 class binarysearcher(object):
     def __init__(self, words):
@@ -68,3 +69,19 @@ class htmlform(object):
         self.action = action
         self.method = method
         self.controls = controls
+
+    def submit(self):
+        dataset = []
+        for typ,nam,val in self.controls:
+            if nam is not None:
+                dataset.append((nam,val))
+        dataset = urlencode(dataset)
+        if self.method == 'POST':
+            return (self.method, self.action,
+                dataset,
+                {'Content-Type': 'application/x-www-form-urlencoded',
+                 'Accept': '*'})
+        elif self.method == 'GET':
+            return (self.method, self.action + '?' + dataset)
+        else:
+            raise ValueError('unknown form submission method %r' % (self.method,))

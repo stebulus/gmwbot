@@ -1,4 +1,5 @@
 from __future__ import division
+from HTMLParser import HTMLParser
 
 class binarysearcher(object):
     def __init__(self, words):
@@ -27,3 +28,28 @@ class cmpword(object):
     def __cmp__(self, other):
         self._callback(other)
         return cmp(self._word, other)
+
+class HTMLFormParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.controls = []
+    def handle_starttag(self, tag, attrs):
+        if tag == 'input':
+            typ = None
+            nam = None
+            val = None
+            for n,v in attrs:
+                n = n.lower()
+                if n == 'type':
+                    typ = v
+                elif n == 'name':
+                    nam = v
+                elif n == 'value':
+                    val = v
+            self.controls.append((typ,nam,val))
+
+def parsecontrols(data):
+    parser = HTMLFormParser()
+    parser.feed(data)
+    parser.close()
+    return parser.controls

@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+import gmwbot
+
+controls = gmwbot.parsecontrols("""\
+<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+<div align="center">What is your guess?
+<input type="text" name="guess" size="15" maxlength="15">
+<input type="submit" value="Guess">
+<input type="submit" name="result" value="I give up! Tell me!" value="no">
+</div>
+<input type="hidden" name="by" value="joon">
+<input type="hidden" name="date" value="">
+<input type="hidden" name="starttime" value="1379615137">
+<input type="hidden" name="guesses" value="lunisolar">
+<input type="hidden" name="guesses" value="reviewer">
+<input type="hidden" name="guesses" value="taco">
+<input type="hidden" name="guesses" value="sable">
+<input type="hidden" name="guesses" value="slinky">
+<input type="hidden" name="guesses" value="shallot">
+<input type="hidden" name="guesses" value="seance">
+<input type="hidden" name="guesses" value="scarab">
+<input type="hidden" name="guesses" value="sclerosis">
+<input type="hidden" name="guesses" value="scrotum">
+<input type="hidden" name="guesses" value="scuttlebutt">
+<input type="hidden" name="guesses" value="scum">
+<input type="hidden" name="guesses" value="scuffle">
+<input type="hidden" name="upper" value="scuffle">
+<input type="hidden" name="lower" value="scrotum">
+</form>""")
+for typ,nam,val in controls:
+    print typ, nam, repr(val)

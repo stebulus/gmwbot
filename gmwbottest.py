@@ -78,20 +78,30 @@ _MOCKGMW_FIRSTFORM = """\
 <input type="hidden" name="starttime" value="">
 </form>
 """
-_MOCKGMW_FIRSTPOST = """\
-<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+
+_MOCKGMW_INTERMED = """\
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">
 <input type="submit" value="Guess">
 <input type="submit" name="result" value="I give up! Tell me!" value="no">
 </div>
-<input type="hidden" name="by" value="joon">
+<input type="hidden" name="by" value="%(by)s">
 <input type="hidden" name="date" value="">
-<input type="hidden" name="starttime" value="%(time)d">
-<input type="hidden" name="guesses" value="%(guess)s">
-<input type="hidden" name="lower" value="%(guess)s">
-</form>
+<input type="hidden" name="starttime" value="%(starttime)s">
+%(guesses)s"""
+
+_MOCKGMW_WINNER = """\
+<div align="center">Enter your name for the daily leaderboard (optional):
+<input type="text" name="guess" size="30" maxlength="30">
+<input type="submit" value="Submit">
+</div>
+<input type="hidden" name="result" value="winner">
+<input type="hidden" name="numguesses" value="%(numguesses)d">
+<input type="hidden" name="guesstime" value="6815">
+<input type="hidden" name="by" value="%(by)s">
+<input type="hidden" name="hist" value="%(hist)s">
 """
+
 class mockgmw():
     """A WSGI application imitating "Guess my word!", for testing purposes."""
     def __init__(self):
@@ -102,11 +112,63 @@ class mockgmw():
             return [_MOCKGMW_FIRSTFORM]
         elif environ['REQUEST_METHOD'] == 'POST':
             dataset = parse_qsl(environ['wsgi.input'].read())
+            guess = None
+            guesses = []
+            starttime = None
+            by = None
+            upper = None
+            lower = None
             for k,v in dataset:
                 if k == 'guess':
-                    start_response('200 OK', [])
-                    return [_MOCKGMW_FIRSTPOST
-                        % {'guess': v, 'time': self.time}]
+                    guess = v
+                elif k == 'guesses':
+                    guesses.append(v)
+                elif k == 'starttime':
+                    starttime = v
+                elif k == 'by':
+                    by = v
+                elif k == 'upper':
+                    upper = v
+                elif k == 'lower':
+                    lower = v
+            if guess is None:
+                start_response("400 Bad Request",
+                    [('Content-Type', 'text/plain')])
+                return ["bad request: no guess"]
+            if by is None:
+                start_response("400 Bad Request",
+                    [('Content-Type', 'text/plain')])
+                return ["bad request: no by"]
+            if starttime is None:  # first guess
+                if guesses:
+                    start_response("400 Bad Request",
+                        [('Content-Type', 'text/plain')])
+                    return ["bad request: previous guesses, but no starttime"]
+                starttime = self.time
+            start_response("200 OK", [('Content-Type', 'text/html')])
+            output = ['<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">\n']
+            guesses.append(guess)
+            c = cmp(self.word, guess)
+            if c == 0:
+                output.append(_MOCKGMW_WINNER % {
+                    'numguesses': len(guesses),
+                    'by': by,
+                    'hist': '-'.join(guesses),
+                    })
             else:
-                start_response('400 No guess supplied', [])
-                return []
+                if c > 0 and (lower is None or lower < guess):
+                    lower = guess
+                if c < 0 and (upper is None or upper > guess):
+                    upper = guess
+                output.append(_MOCKGMW_INTERMED % {
+                    'starttime': starttime,
+                    'by': by,
+                    'guesses': ''.join([
+                        '<input type="hidden" name="guesses" value="%s">\n' % x for x in guesses])
+                    })
+                if lower is not None:
+                    output.append('<input type="hidden" name="lower" value="%s">\n' % lower)
+                if upper is not None:
+                    output.append('<input type="hidden" name="upper" value="%s">\n' % upper)
+            output.append('</form>\n')
+            return output

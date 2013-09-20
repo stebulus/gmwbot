@@ -1,5 +1,5 @@
 from StringIO import StringIO
-from urlparse import parse_qsl
+from urlparse import parse_qs
 
 class mockhttpconn(object):
     """Mock of httplib.HTTPConnection, hosting a WSGI application."""
@@ -88,7 +88,7 @@ _MOCKGMW_INTERMED = """\
 <input type="hidden" name="by" value="%(by)s">
 <input type="hidden" name="date" value="">
 <input type="hidden" name="starttime" value="%(starttime)s">
-%(guesses)s"""
+"""
 
 _MOCKGMW_WINNER = """\
 <div align="center">Enter your name for the daily leaderboard (optional):
@@ -102,6 +102,9 @@ _MOCKGMW_WINNER = """\
 <input type="hidden" name="hist" value="%(hist)s">
 """
 
+def _hidden(name, value):
+    return '<input type="hidden" name="%s" value="%s">\n' % (name, value)
+
 class mockgmw():
     """A WSGI application imitating "Guess my word!", for testing purposes."""
     def __init__(self):
@@ -111,40 +114,22 @@ class mockgmw():
             start_response("200 OK", [])
             return [_MOCKGMW_FIRSTFORM]
         elif environ['REQUEST_METHOD'] == 'POST':
-            dataset = parse_qsl(environ['wsgi.input'].read())
-            guess = None
-            guesses = []
-            starttime = None
-            by = None
-            upper = None
-            lower = None
-            for k,v in dataset:
-                if k == 'guess':
-                    guess = v
-                elif k == 'guesses':
-                    guesses.append(v)
-                elif k == 'starttime':
-                    starttime = v
-                elif k == 'by':
-                    by = v
-                elif k == 'upper':
-                    upper = v
-                elif k == 'lower':
-                    lower = v
-            if guess is None:
+            try:
+                dataset = parse_qs(environ['wsgi.input'].read())
+                guesses = dataset.get('guesses',[])
+                lower = get01(dataset, 'lower')
+                upper = get01(dataset, 'upper')
+                guess = get1(dataset, 'guess')
+                by = get1(dataset, 'by')
+                starttime = get01(dataset, 'starttime')
+                if starttime is None:
+                    if guesses:
+                        raise BadRequest("previous guesses, but no starttime")
+                    starttime = self.time
+            except BadRequest, e:
                 start_response("400 Bad Request",
                     [('Content-Type', 'text/plain')])
-                return ["bad request: no guess"]
-            if by is None:
-                start_response("400 Bad Request",
-                    [('Content-Type', 'text/plain')])
-                return ["bad request: no by"]
-            if starttime is None:  # first guess
-                if guesses:
-                    start_response("400 Bad Request",
-                        [('Content-Type', 'text/plain')])
-                    return ["bad request: previous guesses, but no starttime"]
-                starttime = self.time
+                return ["bad request: ", e.msg]
             start_response("200 OK", [('Content-Type', 'text/html')])
             output = ['<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">\n']
             guesses.append(guess)
@@ -163,12 +148,33 @@ class mockgmw():
                 output.append(_MOCKGMW_INTERMED % {
                     'starttime': starttime,
                     'by': by,
-                    'guesses': ''.join([
-                        '<input type="hidden" name="guesses" value="%s">\n' % x for x in guesses])
                     })
+                for x in guesses:
+                    output.append(_hidden('guesses',x))
                 if lower is not None:
-                    output.append('<input type="hidden" name="lower" value="%s">\n' % lower)
+                    output.append(_hidden('lower',lower))
                 if upper is not None:
-                    output.append('<input type="hidden" name="upper" value="%s">\n' % upper)
+                    output.append(_hidden('upper',upper))
             output.append('</form>\n')
             return output
+
+class BadRequest(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+def get01(dataset, key):
+    lst = dataset.get(key, [])
+    if len(lst) > 1:
+        raise BadRequest("more than one value for %r" % (key,))
+    if lst:
+        return lst[0]
+    else:
+        return None
+
+def get1(dataset, key):
+    lst = dataset.get(key, None)
+    if lst is None:
+        raise BadRequest("no value for %r" % (key,))
+    if len(lst) > 1:
+        raise BadRequest("more than one value for %r" % (key,))
+    return lst[0]

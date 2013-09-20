@@ -67,7 +67,6 @@ def dumpresponse(app, method, url, body=None, headers=None):
     print resp.read(),
 
 _MOCKGMW_FIRSTFORM = """\
-<p>This is a crude imitation of the Guess My Word CGI program.</p>
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">

@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 import gmwbottest
 
-gmwbottest.dumpresponse(gmwbottest.mockgmw, "GET", "/")
+gmwbottest.dumpresponse(gmwbottest.mockgmw(), "GET", "/")

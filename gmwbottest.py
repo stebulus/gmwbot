@@ -93,17 +93,18 @@ _MOCKGMW_FIRSTPOST = """\
 <input type="hidden" name="lower" value="%(guess)s">
 </form>
 """
-def mockgmw(environ, start_response):
+class mockgmw():
     """A WSGI application imitating "Guess my word!", for testing purposes."""
-    if environ['REQUEST_METHOD'] == 'GET':
-        start_response("200 OK", [])
-        return [_MOCKGMW_FIRSTFORM]
-    elif environ['REQUEST_METHOD'] == 'POST':
-        dataset = parse_qsl(environ['wsgi.input'].read())
-        for k,v in dataset:
-            if k == 'guess':
-                start_response('200 OK', [])
-                return [_MOCKGMW_FIRSTPOST % {'guess': v}]
-        else:
-            start_response('400 No guess supplied', [])
-            return []
+    def __call__(self, environ, start_response):
+        if environ['REQUEST_METHOD'] == 'GET':
+            start_response("200 OK", [])
+            return [_MOCKGMW_FIRSTFORM]
+        elif environ['REQUEST_METHOD'] == 'POST':
+            dataset = parse_qsl(environ['wsgi.input'].read())
+            for k,v in dataset:
+                if k == 'guess':
+                    start_response('200 OK', [])
+                    return [_MOCKGMW_FIRSTPOST % {'guess': v}]
+            else:
+                start_response('400 No guess supplied', [])
+                return []

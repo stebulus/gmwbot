@@ -88,13 +88,15 @@ _MOCKGMW_FIRSTPOST = """\
 </div>
 <input type="hidden" name="by" value="joon">
 <input type="hidden" name="date" value="">
-<input type="hidden" name="starttime" value="1379615137">
+<input type="hidden" name="starttime" value="%(time)d">
 <input type="hidden" name="guesses" value="%(guess)s">
 <input type="hidden" name="lower" value="%(guess)s">
 </form>
 """
 class mockgmw():
     """A WSGI application imitating "Guess my word!", for testing purposes."""
+    def __init__(self):
+        self.time = 0
     def __call__(self, environ, start_response):
         if environ['REQUEST_METHOD'] == 'GET':
             start_response("200 OK", [])
@@ -104,7 +106,8 @@ class mockgmw():
             for k,v in dataset:
                 if k == 'guess':
                     start_response('200 OK', [])
-                    return [_MOCKGMW_FIRSTPOST % {'guess': v}]
+                    return [_MOCKGMW_FIRSTPOST
+                        % {'guess': v, 'time': self.time}]
             else:
                 start_response('400 No guess supplied', [])
                 return []

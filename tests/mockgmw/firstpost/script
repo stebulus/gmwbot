@@ -17,4 +17,6 @@ form = gmwbot.htmlform.fromstr("""\
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = (typ,nam,'lunisolar')
-gmwbottest.dumpresponse(gmwbottest.mockgmw(), *form.submit())
+gmw = gmwbottest.mockgmw()
+gmw.time = 1234
+gmwbottest.dumpresponse(gmw, *form.submit())

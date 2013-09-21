@@ -1,26 +1,26 @@
 Searching for 'gaggle'
-lackey
-blimey
-dismay
-gaggle
+? < lackey
+? > blimey
+? > dismay
+? = gaggle
 result: gaggle
 
 Searching for 'taco'
-lackey
-robot
-undulate
+? > lackey
+? > robot
+? < undulate
 result: None
 
 Searching for 'aaa'
-lackey
-blimey
-aaa
+? < lackey
+? < blimey
+? = aaa
 result: aaa
 
 Searching for 'zzz'
-lackey
-robot
-undulate
-zzz
+? > lackey
+? > robot
+? > undulate
+? = zzz
 result: zzz
 

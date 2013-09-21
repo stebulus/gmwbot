@@ -2,6 +2,55 @@ from __future__ import division
 from HTMLParser import HTMLParser
 from urllib import urlencode
 
+class Error(Exception):
+    pass
+
+class gmwclient(object):
+    def __init__(self, conn):
+        self.conn = conn
+        resp = self.conn.getresponse()
+        self.form = htmlform.fromstr(resp.read())
+    def __cmp__(self, other):
+        for i,(typ,nam,val) in enumerate(self.form.controls):
+            if nam == 'guess':
+                self.form.controls[i] = (typ,nam,str(other))
+                break
+        self.conn.request(*self.form.submit())
+        resp = self.conn.getresponse()
+        body = resp.read()
+        result = GMWResultParser()
+        result.feed(body)
+        self.form = htmlform.fromstr(body)
+        if result.result is None:
+            raise Error('could not interpret reply from GMW')
+        return result.result
+
+class GMWResultParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self._p = 0
+        self._data = []
+        self.result = None
+    def handle_starttag(self, tag, attrs):
+        if tag == 'p':
+            self._p += 1
+    def handle_data(self, data):
+        if self._p > 0:
+            self._data.append(data)
+    def handle_endtag(self, tag):
+        if tag == 'p':
+            self._p -= 1
+            if self._p == 0:
+                self.handle_p(''.join(self._data))
+                self._data = []
+    def handle_p(self, text):
+        if text == 'You guessed it! well done.':
+            self.result = 0
+        elif text.startswith('My word is before '):
+            self.result = -1
+        elif text.startswith('My word is after '):
+            self.result = 1
+
 class binarysearcher(object):
     def __init__(self, words):
         self._words = [None] + words + [None]

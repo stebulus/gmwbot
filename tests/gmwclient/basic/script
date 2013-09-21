@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+import gmwbot
+import gmwbottest
+
+server = gmwbottest.mockgmw()
+server.word = 'rascal'
+conn = gmwbottest.mockhttpconn(server)
+conn.request('GET', '/')
+client = gmwbot.gmwclient(conn)
+
+class cmplog(object):
+    def __init__(self, cmpable):
+        self._cmpable = cmpable
+    def __cmp__(self, other):
+        c = cmp(self._cmpable, other)
+        if c < 0:
+            op = '<'
+        elif c == 0:
+            op = '='
+        else:
+            op = '>'
+        print '? %s %s' % (op, other)
+        return c
+
+words = []
+with open('twl') as twl:
+    for line in twl:
+        words.append(line.rstrip())
+search = gmwbot.binarysearcher(words)
+
+result = search(cmplog(client))
+print 'result:', result

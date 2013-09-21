@@ -11,6 +11,11 @@ init
 </form>
 
 lunisolar
+<p>Your guesses so far:</p>
+<ol>
+<li><span style="color:blue">lunisolar</span></li>
+</ol>
+<p align="center">My word is after lunisolar.</p>
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">
@@ -25,6 +30,12 @@ lunisolar
 </form>
 
 taco
+<p>Your guesses so far:</p>
+<ol>
+<li><span style="color:blue">lunisolar</span></li>
+<li><span style="color:red">taco</span></li>
+</ol>
+<p align="center">My word is before taco.</p>
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">
@@ -41,6 +52,13 @@ taco
 </form>
 
 sable
+<p>Your guesses so far:</p>
+<ol>
+<li><span style="color:blue">lunisolar</span></li>
+<li><span style="color:red">taco</span></li>
+<li><span style="color:black">sable</span></li>
+</ol>
+<p align="center">You guessed it! well done.</p>
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">Enter your name for the daily leaderboard (optional):
 <input type="text" name="guess" size="30" maxlength="30">

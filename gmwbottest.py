@@ -130,10 +130,38 @@ class mockgmw():
                 start_response("400 Bad Request",
                     [('Content-Type', 'text/plain')])
                 return ["bad request: ", e.msg]
-            start_response("200 OK", [('Content-Type', 'text/html')])
-            output = ['<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">\n']
             guesses.append(guess)
             c = cmp(self.word, guess)
+            if c > 0 and (lower is None or lower < guess):
+                lower = guess
+            if c < 0 and (upper is None or upper > guess):
+                upper = guess
+
+            start_response("200 OK", [('Content-Type', 'text/html')])
+            output = []
+            output.append('<p>Your guesses so far:</p>\n')
+            output.append('<ol>\n')
+            for g in guesses:
+                if g == upper:
+                    color = 'red'
+                elif g == lower:
+                    color = 'blue'
+                else:
+                    color = 'black'
+                output.append('<li><span style="color:%(color)s">%(guess)s</span></li>\n' % {'guess': g, 'color': color})
+            output.append('</ol>\n')
+            output.append('<p align="center">')
+            if c == 0:
+                output.append('You guessed it! well done.')
+            else:
+                output.append('My word is ')
+                if c < 0:
+                    output.append('before')
+                else:
+                    output.append('after')
+                output.append(' %s.' % (guess,))
+            output.append('</p>\n')
+            output.append('<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">\n')
             if c == 0:
                 output.append(_MOCKGMW_WINNER % {
                     'numguesses': len(guesses),
@@ -141,10 +169,6 @@ class mockgmw():
                     'hist': '-'.join(guesses),
                     })
             else:
-                if c > 0 and (lower is None or lower < guess):
-                    lower = guess
-                if c < 0 and (upper is None or upper > guess):
-                    upper = guess
                 output.append(_MOCKGMW_INTERMED % {
                     'starttime': starttime,
                     'by': by,

@@ -66,7 +66,9 @@ def dumpresponse(app, method, url, body=None, headers=None):
     print
     print resp.read(),
 
-_MOCKGMW_FIRSTFORM = """\
+class mockgmw():
+    """A WSGI application imitating "Guess my word!", for testing purposes."""
+    _FIRSTFORM = """\
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">
@@ -79,7 +81,7 @@ _MOCKGMW_FIRSTFORM = """\
 </form>
 """
 
-_MOCKGMW_INTERMED = """\
+    _INTERMED = """\
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">
 <input type="submit" value="Guess">
@@ -90,7 +92,7 @@ _MOCKGMW_INTERMED = """\
 <input type="hidden" name="starttime" value="%(starttime)s">
 """
 
-_MOCKGMW_WINNER = """\
+    _WINNER = """\
 <div align="center">Enter your name for the daily leaderboard (optional):
 <input type="text" name="guess" size="30" maxlength="30">
 <input type="submit" value="Submit">
@@ -102,17 +104,15 @@ _MOCKGMW_WINNER = """\
 <input type="hidden" name="hist" value="%(hist)s">
 """
 
-def _hidden(name, value):
-    return '<input type="hidden" name="%s" value="%s">\n' % (name, value)
+    def _hidden(self, name, value):
+        return '<input type="hidden" name="%s" value="%s">\n' % (name, value)
 
-class mockgmw():
-    """A WSGI application imitating "Guess my word!", for testing purposes."""
     def __init__(self):
         self.time = 0
     def __call__(self, environ, start_response):
         if environ['REQUEST_METHOD'] == 'GET':
             start_response("200 OK", [])
-            return [_MOCKGMW_FIRSTFORM]
+            return [self._FIRSTFORM]
         elif environ['REQUEST_METHOD'] == 'POST':
             try:
                 dataset = parse_qs(environ['wsgi.input'].read())
@@ -163,22 +163,22 @@ class mockgmw():
             output.append('</p>\n')
             output.append('<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">\n')
             if c == 0:
-                output.append(_MOCKGMW_WINNER % {
+                output.append(self._WINNER % {
                     'numguesses': len(guesses),
                     'by': by,
                     'hist': '-'.join(guesses),
                     })
             else:
-                output.append(_MOCKGMW_INTERMED % {
+                output.append(self._INTERMED % {
                     'starttime': starttime,
                     'by': by,
                     })
                 for x in guesses:
-                    output.append(_hidden('guesses',x))
+                    output.append(self._hidden('guesses',x))
                 if lower is not None:
-                    output.append(_hidden('lower',lower))
+                    output.append(self._hidden('lower',lower))
                 if upper is not None:
-                    output.append(_hidden('upper',upper))
+                    output.append(self._hidden('upper',upper))
             output.append('</form>\n')
             return output
 

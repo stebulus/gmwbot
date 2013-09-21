@@ -10,6 +10,8 @@ class gmwclient(object):
         self.conn = conn
         resp = self.conn.getresponse()
         self.form = htmlform.fromstr(resp.read())
+        self.lower = None
+        self.upper = None
     def __cmp__(self, other):
         for i,(typ,nam,val) in enumerate(self.form.controls):
             if nam == 'guess':
@@ -21,8 +23,17 @@ class gmwclient(object):
         result = GMWResultParser()
         result.feed(body)
         self.form = htmlform.fromstr(body)
+        lower = formget01(self.form, 'lower')
+        upper = formget01(self.form, 'upper')
         if result.result is None:
             raise Error('could not interpret reply from GMW')
+        if result.result > 0 and (self.lower is None or other > self.lower):
+            self.lower = other
+        if result.result < 0 and (self.upper is None or other < self.upper):
+            self.upper = other
+        if result.result != 0 and (lower != self.lower or upper != self.upper):
+            raise Error('expected range %r-%r, not %r-%r'
+                % (self.lower, self.upper, lower, upper))
         return result.result
 
 class GMWResultParser(HTMLParser):
@@ -109,6 +120,9 @@ class htmlform(object):
         self.method = method
         self.controls = controls
 
+    def values(self, name):
+        return [val for typ,nam,val in self.controls if nam == name]
+
     def submit(self):
         dataset = []
         for typ,nam,val in self.controls:
@@ -124,3 +138,20 @@ class htmlform(object):
             return (self.method, self.action + '?' + dataset)
         else:
             raise ValueError('unknown form submission method %r' % (self.method,))
+
+def formget01(form, key):
+    lst = form.values(key)
+    if len(lst) > 1:
+        raise Error("more than one value for %r" % (key,))
+    if lst:
+        return lst[0]
+    else:
+        return None
+
+def formget1(form, key):
+    lst = form.values(key)
+    if lst is None:
+        raise Error("no value for %r" % (key,))
+    if len(lst) > 1:
+        raise Error("more than one value for %r" % (key,))
+    return lst[0]

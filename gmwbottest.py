@@ -109,6 +109,8 @@ class mockgmw():
 
     def __init__(self):
         self.time = 0
+        self._replaceupper = None
+        self._replacelower = None
     def __call__(self, environ, start_response):
         if environ['REQUEST_METHOD'] == 'GET':
             start_response("200 OK", [])
@@ -136,6 +138,13 @@ class mockgmw():
                 lower = guess
             if c < 0 and (upper is None or upper > guess):
                 upper = guess
+
+            if self._replacelower is not None:
+                lower = self._replacelower
+                self._replacelower = None
+            if self._replaceupper is not None:
+                upper = self._replaceupper
+                self._replaceupper = None
 
             start_response("200 OK", [('Content-Type', 'text/html')])
             output = []
@@ -181,6 +190,11 @@ class mockgmw():
                     output.append(self._hidden('upper',upper))
             output.append('</form>\n')
             return output
+
+    def replaceupper(self, upper):
+        self._replaceupper = upper
+    def replacelower(self, lower):
+        self._replacelower = lower
 
 class BadRequest(Exception):
     def __init__(self, msg):

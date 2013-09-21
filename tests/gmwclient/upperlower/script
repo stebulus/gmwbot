@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+import gmwbot
+import gmwbottest
+
+def setup():
+    server = gmwbottest.mockgmw()
+    server.word = 'rascal'
+    conn = gmwbottest.mockhttpconn(server)
+    conn.request('GET', '/')
+    client = gmwbottest.cmplog(gmwbot.gmwclient(conn))
+    return client, server
+
+client, server = setup()
+cmp(client, 'lunisolar')
+server.replaceupper('shenanigans')
+try:
+    cmp(client, 'taco')
+except gmwbot.Error, e:
+    print e
+else:
+    print 'no error'
+
+client, server = setup()
+cmp(client, 'lunisolar')
+server.replacelower('flute')
+try:
+    cmp(client, 'taco')
+except gmwbot.Error, e:
+    print e
+else:
+    print 'no error'

@@ -1,6 +1,7 @@
-init
-lunisolar
-sable
+GMW: initial request
+GMW: guess: lunisolar
+GMW: guess: sable
+GMW: leaderboard submission: I WIN
 <h3>Correct solvers for today:</h3>
 <table border=1>
 <tr><th>Rank</th><th>Name</th><th>Guesses</th><th>Time</th><th>History (mouse over)</th></tr>

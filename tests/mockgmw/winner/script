@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 import gmwbot
 import gmwbottest
+import sys
 
-gmw = gmwbottest.mockgmw()
+gmw = gmwbottest.mockgmw(sys.stdout)
 gmw.time = 1234
 gmw.word = 'sable'
 
-print 'init'
 conn = gmwbottest.mockhttpconn(gmw)
 conn.request("GET", "/")
 reply = conn.getresponse().read()
 
-print 'lunisolar'
 form = gmwbot.htmlform.fromstr(reply)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
@@ -19,7 +18,6 @@ for i,(typ,nam,val) in enumerate(form.controls):
 conn.request(*form.submit())
 reply = conn.getresponse().read()
 
-print 'sable'
 form = gmwbot.htmlform.fromstr(reply)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':

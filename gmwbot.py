@@ -7,12 +7,13 @@ class Error(Exception):
     pass
 
 class gmwclient(object):
-    def __init__(self, conn):
+    def __init__(self, conn, leaderboardname=None):
         self.conn = conn
         resp = self.conn.getresponse()
         self.form = htmlform.fromstr(resp.read())
         self.lower = None
         self.upper = None
+        self.leaderboardname = leaderboardname
     def __cmp__(self, other):
         for i,(typ,nam,val) in enumerate(self.form.controls):
             if nam == 'guess':
@@ -35,6 +36,13 @@ class gmwclient(object):
         if result.result != 0 and (lower != self.lower or upper != self.upper):
             raise Error('expected range %r-%r, not %r-%r'
                 % (self.lower, self.upper, lower, upper))
+        if result.result == 0 and self.leaderboardname is not None:
+            for i,(typ,nam,val) in enumerate(self.form.controls):
+                if nam == 'guess':
+                    self.form.controls[i] = (typ,nam,str(self.leaderboardname))
+                    break
+            self.conn.request(*self.form.submit())
+            self.form = None
         return result.result
 
 class GMWResultParser(HTMLParser):

@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+import gmwbot
+import gmwbottest
+import sys
+
+server = gmwbottest.mockgmw(sys.stdout)
+server.word = 'sable'
+conn = gmwbottest.mockhttpconn(server)
+conn.request('GET', '/')
+client = gmwbot.gmwclient(conn, 'WINNER IS ME')
+print client == 'sable'

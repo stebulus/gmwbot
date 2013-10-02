@@ -1,4 +1,10 @@
+GMW: initial request
+GMW: guess: lunisolar
 ? > lunisolar
+GMW: guess: taco
 expected range 'lunisolar'-'taco', not 'lunisolar'-'shenanigans'
+GMW: initial request
+GMW: guess: lunisolar
 ? > lunisolar
+GMW: guess: taco
 expected range 'lunisolar'-'taco', not 'flute'-'taco'

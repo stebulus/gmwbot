@@ -1,4 +1,5 @@
 #!/usr/bin/env python
 import gmwbottest
+import sys
 
-gmwbottest.dumpresponse(gmwbottest.mockgmw(), "GET", "/")
+gmwbottest.dumpresponse(gmwbottest.mockgmw(sys.stdout), "GET", "/")

@@ -1,3 +1,4 @@
+GMW: initial request
 200 OK
 
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">

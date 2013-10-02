@@ -1,0 +1,9 @@
+init
+lunisolar
+sable
+<h3>Correct solvers for today:</h3>
+<table border=1>
+<tr><th>Rank</th><th>Name</th><th>Guesses</th><th>Time</th><th>History (mouse over)</th></tr>
+<tr><td>1</td><td>You</td><td>1</td><td>0:00</td><td title="rankle">Guess history</td></tr>
+</table>
+

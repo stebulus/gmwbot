@@ -104,6 +104,14 @@ class mockgmw():
 <input type="hidden" name="hist" value="%(hist)s">
 """
 
+    _LEADERBOARD = """\
+<h3>Correct solvers for today:</h3>
+<table border=1>
+<tr><th>Rank</th><th>Name</th><th>Guesses</th><th>Time</th><th>History (mouse over)</th></tr>
+<tr><td>1</td><td>You</td><td>1</td><td>0:00</td><td title="rankle">Guess history</td></tr>
+</table>
+"""
+
     def _hidden(self, name, value):
         return '<input type="hidden" name="%s" value="%s">\n' % (name, value)
 
@@ -132,64 +140,67 @@ class mockgmw():
                 start_response("400 Bad Request",
                     [('Content-Type', 'text/plain')])
                 return ["bad request: ", e.msg]
-            guesses.append(guess)
-            c = cmp(self.word, guess)
-            if c > 0 and (lower is None or lower < guess):
-                lower = guess
-            if c < 0 and (upper is None or upper > guess):
-                upper = guess
-
-            if self._replacelower is not None:
-                lower = self._replacelower
-                self._replacelower = None
-            if self._replaceupper is not None:
-                upper = self._replaceupper
-                self._replaceupper = None
-
-            start_response("200 OK", [('Content-Type', 'text/html')])
-            output = []
-            output.append('<p>Your guesses so far:</p>\n')
-            output.append('<ol>\n')
-            for g in guesses:
-                if g == upper:
-                    color = 'red'
-                elif g == lower:
-                    color = 'blue'
-                else:
-                    color = 'black'
-                output.append('<li><span style="color:%(color)s">%(guess)s</span></li>\n' % {'guess': g, 'color': color})
-            output.append('</ol>\n')
-            output.append('<p align="center">')
-            if c == 0:
-                output.append('You guessed it! well done.')
+            if dataset.get('result',[]) == ['winner']:
+                return [self._LEADERBOARD]
             else:
-                output.append('My word is ')
-                if c < 0:
-                    output.append('before')
+                guesses.append(guess)
+                c = cmp(self.word, guess)
+                if c > 0 and (lower is None or lower < guess):
+                    lower = guess
+                if c < 0 and (upper is None or upper > guess):
+                    upper = guess
+
+                if self._replacelower is not None:
+                    lower = self._replacelower
+                    self._replacelower = None
+                if self._replaceupper is not None:
+                    upper = self._replaceupper
+                    self._replaceupper = None
+
+                start_response("200 OK", [('Content-Type', 'text/html')])
+                output = []
+                output.append('<p>Your guesses so far:</p>\n')
+                output.append('<ol>\n')
+                for g in guesses:
+                    if g == upper:
+                        color = 'red'
+                    elif g == lower:
+                        color = 'blue'
+                    else:
+                        color = 'black'
+                    output.append('<li><span style="color:%(color)s">%(guess)s</span></li>\n' % {'guess': g, 'color': color})
+                output.append('</ol>\n')
+                output.append('<p align="center">')
+                if c == 0:
+                    output.append('You guessed it! well done.')
                 else:
-                    output.append('after')
-                output.append(' %s.' % (guess,))
-            output.append('</p>\n')
-            output.append('<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">\n')
-            if c == 0:
-                output.append(self._WINNER % {
-                    'numguesses': len(guesses),
-                    'by': by,
-                    'hist': '-'.join(guesses),
-                    })
-            else:
-                output.append(self._INTERMED % {
-                    'starttime': starttime,
-                    'by': by,
-                    })
-                for x in guesses:
-                    output.append(self._hidden('guesses',x))
-                if lower is not None:
-                    output.append(self._hidden('lower',lower))
-                if upper is not None:
-                    output.append(self._hidden('upper',upper))
-            output.append('</form>\n')
-            return output
+                    output.append('My word is ')
+                    if c < 0:
+                        output.append('before')
+                    else:
+                        output.append('after')
+                    output.append(' %s.' % (guess,))
+                output.append('</p>\n')
+                output.append('<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">\n')
+                if c == 0:
+                    output.append(self._WINNER % {
+                        'numguesses': len(guesses),
+                        'by': by,
+                        'hist': '-'.join(guesses),
+                        })
+                else:
+                    output.append(self._INTERMED % {
+                        'starttime': starttime,
+                        'by': by,
+                        })
+                    for x in guesses:
+                        output.append(self._hidden('guesses',x))
+                    if lower is not None:
+                        output.append(self._hidden('lower',lower))
+                    if upper is not None:
+                        output.append(self._hidden('upper',upper))
+                output.append('</form>\n')
+                return output
 
     def replaceupper(self, upper):
         self._replaceupper = upper

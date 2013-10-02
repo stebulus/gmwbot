@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import gmwbot
 import gmwbottest
+import sys
 
-server = gmwbottest.mockgmw()
+server = gmwbottest.mockgmw(sys.stdout)
 server.word = 'rascal'
 conn = gmwbottest.mockhttpconn(server)
 conn.request('GET', '/')

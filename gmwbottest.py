@@ -115,12 +115,17 @@ class mockgmw():
     def _hidden(self, name, value):
         return '<input type="hidden" name="%s" value="%s">\n' % (name, value)
 
-    def __init__(self):
+    def __init__(self, logfile=None):
         self.time = 0
         self._replaceupper = None
         self._replacelower = None
+        self._logfile = logfile
+    def _log(self, msg):
+        if self._logfile is not None:
+            print >>self._logfile, msg
     def __call__(self, environ, start_response):
         if environ['REQUEST_METHOD'] == 'GET':
+            self._log('GMW: initial request')
             start_response("200 OK", [])
             return [self._FIRSTFORM]
         elif environ['REQUEST_METHOD'] == 'POST':
@@ -137,12 +142,15 @@ class mockgmw():
                         raise BadRequest("previous guesses, but no starttime")
                     starttime = self.time
             except BadRequest, e:
+                self._log('GMW: 400 Bad Request: %s' % e.msg)
                 start_response("400 Bad Request",
                     [('Content-Type', 'text/plain')])
                 return ["bad request: ", e.msg]
             if dataset.get('result',[]) == ['winner']:
+                self._log('GMW: leaderboard submission: %s' % (guess,))
                 return [self._LEADERBOARD]
             else:
+                self._log('GMW: guess: %s' % (guess,))
                 guesses.append(guess)
                 c = cmp(self.word, guess)
                 if c > 0 and (lower is None or lower < guess):

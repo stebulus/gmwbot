@@ -1,5 +1,6 @@
 from __future__ import division
 from HTMLParser import HTMLParser
+from time import time, sleep
 from urllib import urlencode
 
 class Error(Exception):
@@ -61,6 +62,23 @@ class GMWResultParser(HTMLParser):
             self.result = -1
         elif text.startswith('My word is after '):
             self.result = 1
+
+class throttledfunc(object):
+    def __init__(self, mingap, func):
+        self._mingap = mingap
+        self._nexttime = None
+        self._func = func
+    def __call__(self, *args, **kwargs):
+        if self._nexttime is not None:
+            now = time()
+            if self._nexttime > now:
+                sleep(self._nexttime-now)
+        self._nexttime = time() + self._mingap
+        return self._func(*args, **kwargs)
+def throttled(mingap):  # for use as decorator
+    def throttle(func):
+        return throttledfunc(mingap, func)
+    return throttle
 
 class binarysearcher(object):
     def __init__(self, words):

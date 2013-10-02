@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+from gmwbot import throttled
+from time import time, sleep
+
+@throttled(0.1)
+def func():
+    print '%.1f' % (time()-zero,)
+zero = time()
+func()
+func()
+sleep(0.3)
+func()
+func()

@@ -1,4 +1,4 @@
-init
+GMW: initial request
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">
@@ -10,7 +10,7 @@ init
 <input type="hidden" name="starttime" value="">
 </form>
 
-lunisolar
+GMW: guess: lunisolar
 <p>Your guesses so far:</p>
 <ol>
 <li><span style="color:blue">lunisolar</span></li>
@@ -29,7 +29,7 @@ lunisolar
 <input type="hidden" name="lower" value="lunisolar">
 </form>
 
-taco
+GMW: guess: taco
 <p>Your guesses so far:</p>
 <ol>
 <li><span style="color:blue">lunisolar</span></li>
@@ -51,7 +51,7 @@ taco
 <input type="hidden" name="upper" value="taco">
 </form>
 
-sable
+GMW: guess: sable
 <p>Your guesses so far:</p>
 <ol>
 <li><span style="color:blue">lunisolar</span></li>

@@ -15,4 +15,4 @@ def echo_hdrbody(environ, start_response):
             yield k[5:] + ': ' + v + '\n'
     yield '\n'
     yield environ['wsgi.input'].read()
-gmwbottest.dumpresponse(echo_hdrbody, *form.submit())
+gmwbottest.dumpresponse_httplib(echo_hdrbody, *form.submit())

@@ -3,4 +3,4 @@ import gmwbottest
 def app(environ, start_response):
     start_response("200 OK", [('X-Header1', 'Value1'), ('X-Header2', 'Value2')])
     return ['abc', 'def\n']
-gmwbottest.dumpresponse(app, "GET", "/")
+gmwbottest.dumpresponse_httplib(app, "GET", "/")

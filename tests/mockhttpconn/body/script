@@ -4,4 +4,4 @@ import gmwbottest
 def echo_body(environ, start_response):
     start_response("200 OK", [])
     yield environ['wsgi.input'].read()
-gmwbottest.dumpresponse(echo_body, "POST", "/", "body body body")
+gmwbottest.dumpresponse_httplib(echo_body, "POST", "/", "body body body")

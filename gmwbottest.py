@@ -56,7 +56,7 @@ class mockhttpresponse(object):
             self._body = self._body[amt:]
             return ret
 
-def dumpresponse(app, method, url, body=None, headers=None):
+def dumpresponse_httplib(app, method, url, body=None, headers=None):
     conn = mockhttpconn(app)
     conn.request(method, url, body, headers)
     resp = conn.getresponse()

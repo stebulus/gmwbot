@@ -5,5 +5,5 @@ def echo_method(environ, start_response):
     yield environ['REQUEST_METHOD']
     yield '\n'
 for method in ['GET', 'POST', 'TWIDDLE']:
-    gmwbottest.dumpresponse(echo_method, method, "/")
+    gmwbottest.dumpresponse_httplib(echo_method, method, "/")
     print

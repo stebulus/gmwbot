@@ -5,4 +5,4 @@ def app(environ, start_response):
     write('abc')
     write('def\n')
     return []
-gmwbottest.dumpresponse(app, "GET", "/")
+gmwbottest.dumpresponse_httplib(app, "GET", "/")

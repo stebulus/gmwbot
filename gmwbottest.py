@@ -89,6 +89,10 @@ class mockrequests(object):
         if data is None:
             data = ''
         environ['wsgi.input'] = StringIO(data)
+        if headers is not None:
+            for k,v in headers.items():
+                k = 'HTTP_' + k.replace('-', '_').upper()
+                environ[k] = environ.get(k,'') + v
         def start_response(status, headers):
             resp.status_code = int(status[:3])
             resp.headers = CaseInsensitiveDict(headers)

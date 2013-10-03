@@ -15,20 +15,20 @@ form = gmwbot.htmlform.fromstr(reply)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = typ,nam,'lunisolar'
-conn.request(*form.submit())
+form.submit(conn.request)
 reply = conn.getresponse().read()
 
 form = gmwbot.htmlform.fromstr(reply)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = typ,nam,'sable'
-conn.request(*form.submit())
+form.submit(conn.request)
 reply = conn.getresponse().read()
 
 form = gmwbot.htmlform.fromstr(reply)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = typ,nam,'I WIN'
-conn.request(*form.submit())
+form.submit(conn.request)
 reply = conn.getresponse().read()
 print reply

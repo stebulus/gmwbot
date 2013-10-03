@@ -1,1 +1,3 @@
-('GET', '/action?loud=huzzah&shy=a')
+'GET'
+'/action?loud=huzzah&shy=a'
+None

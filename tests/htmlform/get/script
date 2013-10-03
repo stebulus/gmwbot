@@ -8,4 +8,11 @@ form = gmwbot.htmlform('/action', 'GET',
         ('submit', None, 'Yes'),
         ('hidden', 'shy', 'a'),
     ])
-print repr(form.submit())
+def f(method, url, body=None, headers=None):
+    print repr(method)
+    print repr(url)
+    print repr(body)
+    if headers is not None:
+        for k,v in headers.items:
+            print repr(k) + ': ' + repr(v)
+form.submit(f)

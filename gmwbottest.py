@@ -96,6 +96,9 @@ class mockrequests(object):
         def start_response(status, headers):
             resp.status_code = int(status[:3])
             resp.headers = CaseInsensitiveDict(headers)
+            def write(data):
+                chunks.append(data)
+            return write
         chunks = []
         for chunk in self._app(environ, start_response):
             chunks.append(chunk)

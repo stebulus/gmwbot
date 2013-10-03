@@ -1,4 +1,5 @@
 from StringIO import StringIO
+from urllib import urlencode
 from urlparse import parse_qs
 from requests.structures import CaseInsensitiveDict
 
@@ -86,8 +87,13 @@ class mockrequests(object):
             'wsgi.multiprocess': False,
             'wsgi.run_once': False,
             }
-        if data is None:
-            data = ''
+        try:
+            items = data.items()
+        except AttributeError:
+            if data is None:
+                data = ''
+        else:
+            data = urlencode(items, doseq=True)
         environ['wsgi.input'] = StringIO(data)
         if headers is not None:
             for k,v in headers.items():

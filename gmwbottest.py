@@ -74,6 +74,9 @@ class mockrequests(object):
     def request(self, method, url, params=None, data=None, headers=None):
         resp = self.Response()
         environ = {}
+        if data is None:
+            data = ''
+        environ['wsgi.input'] = StringIO(data)
         def start_response(status, headers):
             resp.status_code = int(status[:3])
             resp.headers = CaseInsensitiveDict(headers)

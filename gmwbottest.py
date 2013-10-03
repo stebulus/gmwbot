@@ -1,5 +1,6 @@
 from StringIO import StringIO
 from urlparse import parse_qs
+from requests.structures import CaseInsensitiveDict
 
 class mockhttpconn(object):
     """Mock of httplib.HTTPConnection, hosting a WSGI application."""
@@ -65,6 +66,35 @@ def dumpresponse_httplib(app, method, url, body=None, headers=None):
         print hdr + ':', val
     print
     print resp.read(),
+
+class mockrequests(object):
+    """A mock version of requests, sending all requests to a WSGI application."""
+    def __init__(self, app):
+        self._app = app
+    def request(self, method, url, params=None, data=None, headers=None):
+        resp = self.Response()
+        environ = {}
+        def start_response(status, headers):
+            resp.status_code = int(status[:3])
+            resp.headers = CaseInsensitiveDict(headers)
+        chunks = []
+        for chunk in self._app(environ, start_response):
+            chunks.append(chunk)
+        resp.content = ''.join(chunks)
+        return resp
+    class Response(object):
+        pass
+
+def dumpresponse(app, method, url, params=None, data=None, headers=None):
+    req = mockrequests(app)
+    resp = req.request(method, url, params=params, data=data, headers=headers)
+    print resp.status_code
+    headers = resp.headers.items()
+    headers.sort()
+    for hdr, val in headers:
+        print hdr + ':', val
+    print
+    print resp.content,
 
 class mockgmw():
     """A WSGI application imitating "Guess my word!", for testing purposes."""

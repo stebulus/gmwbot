@@ -87,6 +87,8 @@ class mockrequests(object):
             'wsgi.multiprocess': False,
             'wsgi.run_once': False,
             }
+        if params is not None:
+            environ['QUERY_STRING'] = urlencode(params, doseq=True)
         try:
             items = data.items()
         except AttributeError:

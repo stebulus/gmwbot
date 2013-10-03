@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+import gmwbottest
+def echo_method(environ, start_response):
+    start_response("200 OK", [])
+    yield environ['REQUEST_METHOD']
+    yield '\n'
+for method in ['GET', 'POST', 'TWIDDLE']:
+    gmwbottest.dumpresponse(echo_method, method, "/")
+    print

@@ -19,7 +19,7 @@ class gmwclient(object):
             if nam == 'guess':
                 self.form.controls[i] = (typ,nam,str(other))
                 break
-        self.form.submit(self.conn.request)
+        self.form.submit_httplib(self.conn.request)
         resp = self.conn.getresponse()
         body = resp.read()
         result = GMWResultParser()
@@ -41,7 +41,7 @@ class gmwclient(object):
                 if nam == 'guess':
                     self.form.controls[i] = (typ,nam,str(self.leaderboardname))
                     break
-            self.form.submit(self.conn.request)
+            self.form.submit_httplib(self.conn.request)
             self.form = None
         return result.result
 
@@ -149,7 +149,7 @@ class htmlform(object):
     def values(self, name):
         return [val for typ,nam,val in self.controls if nam == name]
 
-    def submit(self, f):
+    def submit_httplib(self, f):
         dataset = []
         for typ,nam,val in self.controls:
             if nam is not None:

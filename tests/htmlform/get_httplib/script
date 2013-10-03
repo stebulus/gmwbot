@@ -15,4 +15,4 @@ def f(method, url, body=None, headers=None):
     if headers is not None:
         for k,v in headers.items:
             print repr(k) + ': ' + repr(v)
-form.submit(f)
+form.submit_httplib(f)

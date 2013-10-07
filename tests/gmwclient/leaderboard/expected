@@ -1,4 +1,7 @@
+GMW: GET mock://example.com/?by=joon
 GMW: initial request
+GMW: POST mock://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: sable
+GMW: POST mock://example.com/%7Epahk/dictionary/guess.cgi
 GMW: leaderboard submission: WINNER IS ME
 True

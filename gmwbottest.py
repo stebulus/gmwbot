@@ -1,7 +1,25 @@
 from StringIO import StringIO
-from urllib import urlencode
+from urllib import urlencode, quote
 from urlparse import parse_qs
 from requests.structures import CaseInsensitiveDict
+
+def reconstructurl(environ):
+    url = environ['wsgi.url_scheme']+'://'
+    if environ.get('HTTP_HOST'):
+        url += environ['HTTP_HOST']
+    else:
+        url += environ['SERVER_NAME']
+        if environ['wsgi.url_scheme'] == 'https':
+            if environ['SERVER_PORT'] != '443':
+               url += ':' + environ['SERVER_PORT']
+        else:
+            if environ['SERVER_PORT'] != '80':
+               url += ':' + environ['SERVER_PORT']
+    url += quote(environ.get('SCRIPT_NAME', ''))
+    url += quote(environ.get('PATH_INFO', ''))
+    if environ.get('QUERY_STRING'):
+        url += '?' + environ['QUERY_STRING']
+    return url
 
 class mockrequests(object):
     """A mock version of requests, sending all requests to a WSGI application."""
@@ -119,6 +137,9 @@ class mockgmw():
         if self._logfile is not None:
             print >>self._logfile, msg
     def __call__(self, environ, start_response):
+        self._log('GMW: %s %s' % (
+            environ['REQUEST_METHOD'],
+            reconstructurl(environ)))
         if environ['REQUEST_METHOD'] == 'GET':
             self._log('GMW: initial request')
             start_response("200 OK", [])

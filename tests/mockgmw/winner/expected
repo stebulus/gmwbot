@@ -1,6 +1,10 @@
+GMW: GET mock://example.com/
 GMW: initial request
+GMW: POST mock://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: lunisolar
+GMW: POST mock://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: sable
+GMW: POST mock://example.com/%7Epahk/dictionary/guess.cgi
 GMW: leaderboard submission: I WIN
 <h3>Correct solvers for today:</h3>
 <table border=1>

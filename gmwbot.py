@@ -7,9 +7,9 @@ class Error(Exception):
     pass
 
 class gmwclient(object):
-    def __init__(self, url, request, leaderboardname=None):
+    def __init__(self, url, request, by='joon', leaderboardname=None):
         self._request = request
-        resp = self._request('GET', url)
+        resp = self._request('GET', url, params={'by': by})
         self.form = htmlform.fromstr(resp.content)
         self.lower = None
         self.upper = None

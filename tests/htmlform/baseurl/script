@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+import gmwbot
+
+form = gmwbot.htmlform.fromstr("""\
+<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+<input type="text" name="guess" size="15" maxlength="15">
+<input type="submit" name="result" value="I give up! Tell me!" value="no">
+</form>""",
+baseurl='http://www.example.com/a/b/c')
+print form.action
+
+form = gmwbot.htmlform.fromstr("""\
+<form action="../dictionary/guess.cgi" method="post" name="myform">
+<input type="text" name="guess" size="15" maxlength="15">
+<input type="submit" name="result" value="I give up! Tell me!" value="no">
+</form>""",
+baseurl='http://www.example.com/a/b/c')
+print form.action

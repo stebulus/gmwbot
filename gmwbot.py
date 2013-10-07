@@ -2,6 +2,7 @@ from __future__ import division
 from HTMLParser import HTMLParser
 from time import time, sleep
 from urllib import urlencode
+from urlparse import urljoin
 
 class Error(Exception):
     pass
@@ -133,14 +134,15 @@ class HTMLFormParser(HTMLParser):
 
 class htmlform(object):
     @classmethod
-    def fromstr(cls, s):
+    def fromstr(cls, s, baseurl=None):
         parser = HTMLFormParser()
         parser.feed(s)
         parser.close()
-        return cls(parser.action, parser.method, parser.controls)
+        return cls(parser.action, parser.method, parser.controls,
+            baseurl=baseurl)
 
-    def __init__(self, action, method, controls):
-        self.action = action
+    def __init__(self, action, method, controls, baseurl=None):
+        self.action = urljoin(baseurl, action)
         self.method = method
         self.controls = controls
 

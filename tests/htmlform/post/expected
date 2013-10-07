@@ -1,6 +1,6 @@
-200 OK
+200
 
 CONTENT_TYPE: application/x-www-form-urlencoded
 ACCEPT: *
 
-loud=huzzah&shy=a
+shy=a&loud=huzzah

@@ -1,1 +1,6 @@
-('GET', '/action?loud=huzzah&shy=a')
+'GET'
+'/action'
+param: loud=huzzah
+param: shy=a
+
+None

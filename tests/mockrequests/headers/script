@@ -7,5 +7,5 @@ def echo_headers(environ, start_response):
         if k.startswith("HTTP_"):
             yield k[5:] + ': ' + v + '\n'
 gmwbottest.dumpresponse(echo_headers, "POST", "/",
-    "body body body",
-    { 'header1': 'value1', 'header2': 'value2'})
+    data="body body body",
+    headers={'header1': 'value1', 'header2': 'value2'})

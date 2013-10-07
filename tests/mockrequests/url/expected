@@ -1,0 +1,9 @@
+200
+
+wsgi.url_scheme: 'http'
+HTTP_HOST: None
+SERVER_NAME: 'mock.example.com'
+SERVER_PORT: '1234'
+SCRIPT_NAME: ''
+PATH_INFO: '/x/y/z'
+QUERY_STRING: 'a=foo&b=bar&b=snee'

@@ -1,0 +1,8 @@
+GMW: GET http://www.example.com/a/b/c/d?by=joon
+GMW: initial request
+GMW: POST http://www.example.com/a/b/x/y/z
+GMW: guess: lunisolar
+1
+GMW: POST http://www.example.com/a/b/x/x/y/z
+GMW: guess: sable
+0

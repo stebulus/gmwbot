@@ -7,7 +7,8 @@ def setup():
     server = gmwbottest.mockgmw(sys.stdout)
     server.word = 'rascal'
     req = gmwbottest.mockrequests(server)
-    client = gmwbottest.cmplog(gmwbot.gmwclient('/', req.request))
+    client = gmwbottest.cmplog(
+        gmwbot.gmwclient('http://example.com/', req.request))
     return client, server
 
 client, server = setup()

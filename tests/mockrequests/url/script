@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+import gmwbottest
+
+urlparts = [
+    'wsgi.url_scheme',
+    'HTTP_HOST',
+    'SERVER_NAME',
+    'SERVER_PORT',
+    'SCRIPT_NAME',
+    'PATH_INFO',
+    'QUERY_STRING'
+    ]
+def echo_url(environ, start_response):
+    start_response("200 OK", [])
+    for part in urlparts:
+        yield '%s: %r\n' % (part, environ.get(part))
+gmwbottest.dumpresponse(echo_url, "GET",
+    "http://mock.example.com:1234/x/y/z",
+    params={'a': 'foo', 'b': ['bar', 'snee']})

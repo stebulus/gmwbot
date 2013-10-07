@@ -6,6 +6,6 @@ import sys
 server = gmwbottest.mockgmw(sys.stdout)
 server.word = 'sable'
 req = gmwbottest.mockrequests(server)
-client = gmwbot.gmwclient('/', req.request,
+client = gmwbot.gmwclient('http://example.com/', req.request,
     leaderboardname='WINNER IS ME')
 print client == 'sable'

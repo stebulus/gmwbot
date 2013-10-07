@@ -8,4 +8,4 @@ def echo_environ(environ, start_response):
     for hdr,val in items:
         if hdr not in ['wsgi.input', 'wsgi.errors']:
             yield hdr + ': ' + str(val) + '\n'
-gmwbottest.dumpresponse(echo_environ, "GET", "/")
+gmwbottest.dumpresponse(echo_environ, "GET", "mock://example.com:80/")

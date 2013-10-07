@@ -11,7 +11,7 @@ class gmwclient(object):
     def __init__(self, url, request, by='joon', leaderboardname=None):
         self._request = request
         resp = self._request('GET', url, params={'by': by})
-        self.form = htmlform.fromstr(resp.content)
+        self.form = htmlform.fromstr(resp.content, baseurl=resp.url)
         self.lower = None
         self.upper = None
         self.leaderboardname = leaderboardname
@@ -23,7 +23,7 @@ class gmwclient(object):
         resp = self.form.submit(self._request)
         result = GMWResultParser()
         result.feed(resp.content)
-        self.form = htmlform.fromstr(resp.content)
+        self.form = htmlform.fromstr(resp.content, baseurl=resp.url)
         lower = formget01(self.form, 'lower')
         upper = formget01(self.form, 'upper')
         if result.result is None:

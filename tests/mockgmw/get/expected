@@ -1,4 +1,4 @@
-GMW: GET mock://example.com/
+GMW: GET http://example.com/
 GMW: initial request
 200
 

@@ -2,4 +2,5 @@
 import gmwbottest
 import sys
 
-gmwbottest.dumpresponse(gmwbottest.mockgmw(sys.stdout), "GET", "/")
+gmwbottest.dumpresponse(gmwbottest.mockgmw(sys.stdout),
+    "GET", "http://example.com/")

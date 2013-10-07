@@ -1,4 +1,4 @@
-GMW: GET mock://example.com/
+GMW: GET http://example.com/
 GMW: initial request
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">What is your guess?
@@ -11,7 +11,7 @@ GMW: initial request
 <input type="hidden" name="starttime" value="">
 </form>
 
-GMW: POST mock://example.com/%7Epahk/dictionary/guess.cgi
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: lunisolar
 <p>Your guesses so far:</p>
 <ol>
@@ -31,7 +31,7 @@ GMW: guess: lunisolar
 <input type="hidden" name="lower" value="lunisolar">
 </form>
 
-GMW: POST mock://example.com/%7Epahk/dictionary/guess.cgi
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: taco
 <p>Your guesses so far:</p>
 <ol>
@@ -54,7 +54,7 @@ GMW: guess: taco
 <input type="hidden" name="upper" value="taco">
 </form>
 
-GMW: POST mock://example.com/%7Epahk/dictionary/guess.cgi
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: sable
 <p>Your guesses so far:</p>
 <ol>

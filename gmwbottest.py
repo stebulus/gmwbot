@@ -1,6 +1,6 @@
 from StringIO import StringIO
 from urllib import urlencode, quote
-from urlparse import parse_qs
+from urlparse import urlparse, parse_qs
 from requests.structures import CaseInsensitiveDict
 
 def reconstructurl(environ):
@@ -27,15 +27,19 @@ class mockrequests(object):
         self._app = app
     def request(self, method, url, params=None, data=None, headers=None):
         resp = self.Response()
+        urlp = urlparse(url)
+        port = urlp.port
+        if port is None and urlp.scheme == 'http':
+            port = 80
         environ = {
             'REQUEST_METHOD': method,
             'SCRIPT_NAME': '',
-            'PATH_INFO': url,
-            'SERVER_NAME': 'example.com',
-            'SERVER_PORT': '80',
+            'SERVER_NAME': urlp.hostname,
+            'SERVER_PORT': str(port),
+            'PATH_INFO': urlp.path,
             'SERVER_PROTOCOL': 'HTTP/1.1',
             'wsgi.version': (1,0),
-            'wsgi.url_scheme': 'mock',
+            'wsgi.url_scheme': urlp.scheme,
             'wsgi.multithread': False,
             'wsgi.multiprocess': False,
             'wsgi.run_once': False,
@@ -64,6 +68,7 @@ class mockrequests(object):
         for chunk in self._app(environ, start_response):
             chunks.append(chunk)
         resp.content = ''.join(chunks)
+        resp.url = url
         return resp
     class Response(object):
         pass
@@ -82,7 +87,7 @@ def dumpresponse(app, method, url, params=None, data=None, headers=None):
 class mockgmw():
     """A WSGI application imitating "Guess my word!", for testing purposes."""
     _FIRSTFORM = """\
-<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+<form action="%(action)s" method="post" name="myform">
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">
 <input type="submit" value="Guess">
@@ -133,6 +138,7 @@ class mockgmw():
         self._replaceupper = None
         self._replacelower = None
         self._logfile = logfile
+        self.action = '/~pahk/dictionary/guess.cgi'
     def _log(self, msg):
         if self._logfile is not None:
             print >>self._logfile, msg
@@ -143,7 +149,7 @@ class mockgmw():
         if environ['REQUEST_METHOD'] == 'GET':
             self._log('GMW: initial request')
             start_response("200 OK", [])
-            return [self._FIRSTFORM]
+            return [self._FIRSTFORM % {'action': self.action}]
         elif environ['REQUEST_METHOD'] == 'POST':
             try:
                 dataset = parse_qs(environ['wsgi.input'].read())
@@ -205,7 +211,7 @@ class mockgmw():
                         output.append('after')
                     output.append(' %s.' % (guess,))
                 output.append('</p>\n')
-                output.append('<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">\n')
+                output.append('<form action="%s" method="post" name="myform">\n' % self.action)
                 if c == 0:
                     output.append(self._WINNER % {
                         'numguesses': len(guesses),

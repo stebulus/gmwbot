@@ -8,23 +8,23 @@ gmw.time = 1234
 gmw.word = 'sable'
 
 conn = gmwbottest.mockrequests(gmw)
-reply = conn.request("GET", "/").content
+reply = conn.request("GET", "http://example.com:80/")
 
-form = gmwbot.htmlform.fromstr(reply)
+form = gmwbot.htmlform.fromstr(reply.content, baseurl=reply.url)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = typ,nam,'lunisolar'
-reply = form.submit(conn.request).content
+reply = form.submit(conn.request)
 
-form = gmwbot.htmlform.fromstr(reply)
+form = gmwbot.htmlform.fromstr(reply.content, baseurl=reply.url)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = typ,nam,'sable'
-reply = form.submit(conn.request).content
+reply = form.submit(conn.request)
 
-form = gmwbot.htmlform.fromstr(reply)
+form = gmwbot.htmlform.fromstr(reply.content, baseurl=reply.url)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = typ,nam,'I WIN'
-reply = form.submit(conn.request).content
-print reply
+reply = form.submit(conn.request)
+print reply.content

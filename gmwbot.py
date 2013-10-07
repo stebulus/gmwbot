@@ -147,22 +147,6 @@ class htmlform(object):
     def values(self, name):
         return [val for typ,nam,val in self.controls if nam == name]
 
-    def submit_httplib(self, f):
-        dataset = []
-        for typ,nam,val in self.controls:
-            if nam is not None:
-                dataset.append((nam,val))
-        dataset = urlencode(dataset)
-        if self.method == 'POST':
-            return f(self.method, self.action,
-                dataset,
-                {'Content-Type': 'application/x-www-form-urlencoded',
-                 'Accept': '*'})
-        elif self.method == 'GET':
-            return f(self.method, self.action + '?' + dataset)
-        else:
-            raise ValueError('unknown form submission method %r' % (self.method,))
-
     def submit(self, f):
         dataset = {}
         for typ,nam,val in self.controls:

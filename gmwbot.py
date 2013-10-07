@@ -170,7 +170,16 @@ class htmlform(object):
         for typ,nam,val in self.controls:
             if nam is not None:
                 dataset.setdefault(nam,[]).append(val)
-        return f(self.method, self.action, params=dataset)
+        if self.method == 'GET':
+            return f(self.method, self.action, params=dataset)
+        elif self.method == 'POST':
+            return f(self.method, self.action,
+                headers={
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': '*'},
+                data=urlencode(dataset,doseq=True))
+        else:
+            raise ValueError('unknown form submission method %r' % (self.method,))
 
 def formget01(form, key):
     lst = form.values(key)

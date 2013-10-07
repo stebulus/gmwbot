@@ -5,9 +5,8 @@ import sys
 
 server = gmwbottest.mockgmw(sys.stdout)
 server.word = 'rascal'
-conn = gmwbottest.mockhttpconn(server)
-conn.request('GET', '/')
-client = gmwbot.gmwclient(conn)
+req = gmwbottest.mockrequests(server)
+client = gmwbot.gmwclient('/', req.request)
 
 words = []
 with open('twl') as twl:

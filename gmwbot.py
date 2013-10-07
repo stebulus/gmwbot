@@ -7,10 +7,10 @@ class Error(Exception):
     pass
 
 class gmwclient(object):
-    def __init__(self, conn, leaderboardname=None):
-        self.conn = conn
-        resp = self.conn.getresponse()
-        self.form = htmlform.fromstr(resp.read())
+    def __init__(self, url, request, leaderboardname=None):
+        self._request = request
+        resp = self._request('GET', url)
+        self.form = htmlform.fromstr(resp.content)
         self.lower = None
         self.upper = None
         self.leaderboardname = leaderboardname
@@ -19,12 +19,10 @@ class gmwclient(object):
             if nam == 'guess':
                 self.form.controls[i] = (typ,nam,str(other))
                 break
-        self.form.submit_httplib(self.conn.request)
-        resp = self.conn.getresponse()
-        body = resp.read()
+        resp = self.form.submit(self._request)
         result = GMWResultParser()
-        result.feed(body)
-        self.form = htmlform.fromstr(body)
+        result.feed(resp.content)
+        self.form = htmlform.fromstr(resp.content)
         lower = formget01(self.form, 'lower')
         upper = formget01(self.form, 'upper')
         if result.result is None:
@@ -41,7 +39,7 @@ class gmwclient(object):
                 if nam == 'guess':
                     self.form.controls[i] = (typ,nam,str(self.leaderboardname))
                     break
-            self.form.submit_httplib(self.conn.request)
+            self.form.submit(self._request)
             self.form = None
         return result.result
 

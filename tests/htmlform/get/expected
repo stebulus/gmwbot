@@ -1,0 +1,6 @@
+'GET'
+'/action'
+param: loud=huzzah
+param: shy=a
+
+None

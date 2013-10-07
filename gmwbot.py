@@ -165,6 +165,13 @@ class htmlform(object):
         else:
             raise ValueError('unknown form submission method %r' % (self.method,))
 
+    def submit(self, f):
+        dataset = {}
+        for typ,nam,val in self.controls:
+            if nam is not None:
+                dataset.setdefault(nam,[]).append(val)
+        return f(self.method, self.action, params=dataset)
+
 def formget01(form, key):
     lst = form.values(key)
     if len(lst) > 1:

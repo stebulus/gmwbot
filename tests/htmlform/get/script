@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+import gmwbot
+import gmwbottest
+
+form = gmwbot.htmlform('/action', 'GET',
+    [
+        ('text', 'loud', 'huzzah'),
+        ('submit', None, 'Yes'),
+        ('hidden', 'shy', 'a'),
+    ])
+def f(method, url, params=None, data=None, headers=None):
+    print repr(method)
+    print repr(url)
+    if params is None:
+        print repr(params)
+    else:
+        items = params.items()
+        items.sort()
+        for k,vs in items:
+            for v in vs:
+                print 'param:', k + '=' + v
+    if headers is not None:
+        for k,v in headers.items:
+            print repr(k) + ': ' + repr(v)
+    print
+    print repr(data)
+form.submit(f)

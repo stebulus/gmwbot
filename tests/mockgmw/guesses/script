@@ -7,31 +7,27 @@ gmw = gmwbottest.mockgmw(sys.stdout)
 gmw.time = 1234
 gmw.word = 'sable'
 
-conn = gmwbottest.mockhttpconn(gmw)
-conn.request("GET", "/")
-reply = conn.getresponse().read()
+conn = gmwbottest.mockrequests(gmw)
+reply = conn.request("GET", "/").content
 print reply
 
 form = gmwbot.htmlform.fromstr(reply)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = typ,nam,'lunisolar'
-form.submit_httplib(conn.request)
-reply = conn.getresponse().read()
+reply = form.submit(conn.request).content
 print reply
 
 form = gmwbot.htmlform.fromstr(reply)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = typ,nam,'taco'
-form.submit_httplib(conn.request)
-reply = conn.getresponse().read()
+reply = form.submit(conn.request).content
 print reply
 
 form = gmwbot.htmlform.fromstr(reply)
 for i,(typ,nam,val) in enumerate(form.controls):
     if nam == 'guess':
         form.controls[i] = typ,nam,'sable'
-form.submit_httplib(conn.request)
-reply = conn.getresponse().read()
+reply = form.submit(conn.request).content
 print reply

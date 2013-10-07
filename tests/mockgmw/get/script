@@ -2,4 +2,4 @@
 import gmwbottest
 import sys
 
-gmwbottest.dumpresponse_httplib(gmwbottest.mockgmw(sys.stdout), "GET", "/")
+gmwbottest.dumpresponse(gmwbottest.mockgmw(sys.stdout), "GET", "/")

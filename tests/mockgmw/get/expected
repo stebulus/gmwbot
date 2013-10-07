@@ -1,5 +1,5 @@
 GMW: initial request
-200 OK
+200
 
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">What is your guess?

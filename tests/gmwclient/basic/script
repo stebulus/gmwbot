@@ -14,5 +14,5 @@ with open('twl') as twl:
         words.append(line.rstrip())
 search = gmwbot.binarysearcher(words)
 
-result = search(gmwbottest.cmplog(client))
+result = search(gmwbot.cmplog(client))
 print 'result:', result

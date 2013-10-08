@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import gmwbot
-import gmwbottest
 
 words = [
     'aaa',
@@ -16,6 +15,6 @@ words = [
 search = gmwbot.binarysearcher(words)
 for word in [words[3], 'taco', words[0], words[-1]]:
     print 'Searching for', repr(word)
-    result = search(gmwbottest.cmplog(word))
+    result = search(gmwbot.cmplog(word))
     print 'result:', result
     print

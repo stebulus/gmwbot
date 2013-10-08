@@ -257,17 +257,3 @@ def get1(dataset, key):
     if len(lst) > 1:
         raise BadRequest("more than one value for %r" % (key,))
     return lst[0]
-
-class cmplog(object):
-    def __init__(self, cmpable):
-        self._cmpable = cmpable
-    def __cmp__(self, other):
-        c = cmp(self._cmpable, other)
-        if c < 0:
-            op = '<'
-        elif c == 0:
-            op = '='
-        else:
-            op = '>'
-        print '? %s %s' % (op, other)
-        return c

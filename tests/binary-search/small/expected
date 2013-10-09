@@ -1,26 +1,26 @@
 Searching for 'gaggle'
-? < lackey
-? > blimey
-? > dismay
-? = gaggle
-result: gaggle
+(None, None)
+(None, 'lackey')
+('blimey', 'lackey')
+('dismay', 'lackey')
+(True, 'gaggle')
 
 Searching for 'taco'
-? > lackey
-? > robot
-? < undulate
-result: None
+(None, None)
+('lackey', None)
+('robot', None)
+('robot', 'undulate')
 
 Searching for 'aaa'
-? < lackey
-? < blimey
-? = aaa
-result: aaa
+(None, None)
+(None, 'lackey')
+(None, 'blimey')
+(True, 'aaa')
 
 Searching for 'zzz'
-? > lackey
-? > robot
-? > undulate
-? = zzz
-result: zzz
+(None, None)
+('lackey', None)
+('robot', None)
+('undulate', None)
+(True, 'zzz')
 

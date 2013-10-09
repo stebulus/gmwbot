@@ -104,17 +104,18 @@ class binarysearcher(object):
     def __call__(self, word):
         lft = 0
         rt = len(self._words)-1
+        yield (self._words[lft], self._words[rt])
         while lft+1 < rt:
             mid = (lft+rt)//2
             c = cmp(word, self._words[mid])
             if c == 0:
-                return self._words[mid]
+                yield (True, self._words[mid])
+                break
             elif c < 0:
                 rt = mid
             else:
                 lft = mid
-        else:
-            return None
+            yield (self._words[lft], self._words[rt])
 
 class HTMLFormParser(HTMLParser):
     def __init__(self):
@@ -230,4 +231,5 @@ if __name__ == '__main__':
         return requests.request(*args, **kwargs)
     gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
         by=by, leaderboardname='sjtbot1')
-    print search(cmplog(gmw))
+    for x in search(gmw):
+        print x

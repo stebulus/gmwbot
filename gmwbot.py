@@ -138,6 +138,17 @@ class binarysearcher(object):
             else:
                 yield (self._words[i], self._words[j])
 
+class searchseq(object):
+    def __init__(self, *searchers):
+        self._searchers = searchers
+    def __call__(self, word, left=None, right=None):
+        for search in self._searchers:
+            for a,b in search(word, left, right):
+                yield (a,b)
+                if a is True:
+                    return
+            left,right = a,b
+
 def last(it):
     for x in it:
         pass

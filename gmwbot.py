@@ -101,27 +101,47 @@ def throttled(mingap):  # for use as decorator
 class binarysearcher(object):
     def __init__(self, words):
         self._words = [None] + words + [None]
+    def _indexsearch(self, word, left=None, right=None):
+        if left is None:
+            left = 0
+        if right is None:
+            right = len(self._words)-1
+        yield (left, right)
+        while left+1 < right:
+            mid = (left+right)//2
+            c = cmp(word, self._words[mid])
+            if c == 0:
+                yield (True, mid)
+                break
+            elif c < 0:
+                right = mid
+            else:
+                left = mid
+            yield (left, right)
     def __call__(self, word, left=None, right=None):
         if left is None:
             lft = 0
         else:
-            lft = self._words.index(left)
+            i, j = last(self._indexsearch(left))
+            if i is True:
+                lft = j
+            else:
+                lft = i
         if right is None:
             rt = len(self._words)-1
         else:
-            rt = self._words.index(right)
-        yield (self._words[lft], self._words[rt])
-        while lft+1 < rt:
-            mid = (lft+rt)//2
-            c = cmp(word, self._words[mid])
-            if c == 0:
-                yield (True, self._words[mid])
-                break
-            elif c < 0:
-                rt = mid
+            i, j = last(self._indexsearch(right))
+            rt = j
+        for i,j in self._indexsearch(word, lft, rt):
+            if i == True:
+                yield (True, self._words[j])
             else:
-                lft = mid
-            yield (self._words[lft], self._words[rt])
+                yield (self._words[i], self._words[j])
+
+def last(it):
+    for x in it:
+        pass
+    return x
 
 class HTMLFormParser(HTMLParser):
     def __init__(self):

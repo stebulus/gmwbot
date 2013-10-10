@@ -101,9 +101,15 @@ def throttled(mingap):  # for use as decorator
 class binarysearcher(object):
     def __init__(self, words):
         self._words = [None] + words + [None]
-    def __call__(self, word):
-        lft = 0
-        rt = len(self._words)-1
+    def __call__(self, word, left=None, right=None):
+        if left is None:
+            lft = 0
+        else:
+            lft = self._words.index(left)
+        if right is None:
+            rt = len(self._words)-1
+        else:
+            rt = self._words.index(right)
         yield (self._words[lft], self._words[rt])
         while lft+1 < rt:
             mid = (lft+rt)//2

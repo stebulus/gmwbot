@@ -133,7 +133,7 @@ class binarysearcher(object):
             i, j = last(self._indexsearch(right))
             rt = j
         for i,j in self._indexsearch(word, lft, rt):
-            if i == True:
+            if i is True:
                 yield (True, self._words[j])
             else:
                 yield (self._words[i], self._words[j])

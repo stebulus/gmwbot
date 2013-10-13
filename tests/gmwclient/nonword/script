@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+import gmwbot
+import gmwbottest
+import sys
+
+server = gmwbottest.mockgmw(sys.stdout)
+server.word = 'rascal'
+req = gmwbottest.mockrequests(server)
+client = gmwbot.gmwclient('http://example.com/', req.request)
+
+server.nonword = True
+try:
+    print cmp(client, 'nonword')
+except gmwbot.NonwordError, e:
+    print e
+
+print cmp(client, 'word')

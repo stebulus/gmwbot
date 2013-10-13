@@ -229,14 +229,14 @@ class delayedobst(object):
         else:
             i,j = bin.index(left)
             if i is True:
-                lft = j+1
-            else:
                 lft = j
+            else:
+                lft = j-1
         if right is None:
             rt = len(self._words)-1
         else:
             i,j = bin.index(right)
-            rt = j-1
+            rt = j
         obst = obstsearcher(self._words[lft:rt+1],
             self._intweights[lft:rt+1],
             self._extweights[lft:rt+2])

@@ -124,23 +124,26 @@ class binarysearcher(object):
         else:
             i, j = self.index(left)
             if i is True:
-                lft = j
+                lft = j+1
             else:
-                lft = i
+                lft = i+1
         if right is None:
             rt = len(self._words)-1
         else:
             i, j = self.index(right)
-            rt = j
+            rt = j+1
         for i,j in self._indexsearch(word, lft, rt):
             if i is True:
                 yield (True, self._words[j])
             else:
                 yield (self._words[i], self._words[j])
     def index(self, word):
-        for x in self._indexsearch(word):
+        for i,j in self._indexsearch(word):
             pass
-        return x
+        if i is True:
+            return i,j-1
+        else:
+            return i-1,j-1
 
 def array(n):
     a = []
@@ -193,14 +196,14 @@ class obstsearcher(object):
         else:
             i,j = bin.index(left)
             if i is True:
-                lft = j+1
+                lft = j+2
             else:
-                lft = j
+                lft = j+1
         if right is None:
             rt = len(self._words)-2
         else:
             i,j = bin.index(right)
-            rt = j-1
+            rt = j
         yield (self._words[lft-1], self._words[rt+1])
         while lft <= rt:
             mid = self.root(lft,rt)
@@ -236,7 +239,7 @@ class delayedobst(object):
             rt = j-1
         obst = obstsearcher(self._words[lft:rt+1],
             self._intweights[lft:rt+1],
-            self._extweights[lft-1:rt+1])
+            self._extweights[lft:rt+2])
         for x in obst(word, left, right):
             yield x
 

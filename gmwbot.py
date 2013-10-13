@@ -137,6 +137,8 @@ class binarysearcher(object):
                 yield (True, self._words[j])
             else:
                 yield (self._words[i], self._words[j])
+    def index(self, word):
+        return last(self._indexsearch(word))
 
 def array(n):
     a = []
@@ -182,9 +184,21 @@ class obstsearcher(object):
         return self._r[i][j]
     def weight(self,i,j):
         return self._w[i][j]
-    def __call__(self, word):
-        lft=1
-        rt=len(self._words)-2
+    def __call__(self, word, left=None, right=None):
+        bin = binarysearcher(self._words[1:-1])
+        if left is None:
+            lft = 1
+        else:
+            i,j = bin.index(left)
+            if i is True:
+                lft = j+1
+            else:
+                lft = j
+        if right is None:
+            rt = len(self._words)-2
+        else:
+            i,j = bin.index(right)
+            rt = j-1
         yield (self._words[lft-1], self._words[rt+1])
         while lft <= rt:
             mid = self.root(lft,rt)

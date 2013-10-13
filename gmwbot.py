@@ -122,7 +122,7 @@ class binarysearcher(object):
         if left is None:
             lft = 0
         else:
-            i, j = last(self._indexsearch(left))
+            i, j = self.index(left)
             if i is True:
                 lft = j
             else:
@@ -130,7 +130,7 @@ class binarysearcher(object):
         if right is None:
             rt = len(self._words)-1
         else:
-            i, j = last(self._indexsearch(right))
+            i, j = self.index(right)
             rt = j
         for i,j in self._indexsearch(word, lft, rt):
             if i is True:
@@ -138,7 +138,9 @@ class binarysearcher(object):
             else:
                 yield (self._words[i], self._words[j])
     def index(self, word):
-        return last(self._indexsearch(word))
+        for x in self._indexsearch(word):
+            pass
+        return x
 
 def array(n):
     a = []
@@ -223,11 +225,6 @@ class searchseq(object):
                 if a is True:
                     return
             left,right = a,b
-
-def last(it):
-    for x in it:
-        pass
-    return x
 
 class HTMLFormParser(HTMLParser):
     def __init__(self):

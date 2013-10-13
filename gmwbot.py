@@ -154,6 +154,7 @@ class obstsearcher(object):
         for i in range(0,n+1):
             c[i][i] = 0
             w[i][i] = q[i]
+            r[i][i] = i
             for j in range(i+1,n+1):
                 w[i][j] = w[i][j-1] + p[j] + q[j]
         for j in range(1,n+1):
@@ -171,7 +172,7 @@ class obstsearcher(object):
                         bestc = currc
                 c[i][j] = w[i][j] + bestc
                 r[i][j] = bestk
-        self._words = words
+        self._words = [None] + words + [None]
         self._c = c
         self._r = r
         self._w = w
@@ -181,6 +182,22 @@ class obstsearcher(object):
         return self._r[i][j]
     def weight(self,i,j):
         return self._w[i][j]
+    def __call__(self, word):
+        lft=1
+        rt=len(self._words)-2
+        yield (self._words[lft-1], self._words[rt+1])
+        while lft <= rt:
+            mid = self.root(lft,rt)
+            r = self._words[mid]
+            c = cmp(word, r)
+            if c == 0:
+                yield (True, r)
+                break
+            elif c < 0:
+                rt = mid-1
+            else:
+                lft = mid+1
+            yield (self._words[lft-1], self._words[rt+1])
 
 class searchseq(object):
     def __init__(self, *searchers):

@@ -1,0 +1,14 @@
+a
+(None, None)
+(None, 'b')
+(True, 'a')
+
+am
+(None, None)
+(None, 'b')
+('a', 'b')
+
+d
+(None, None)
+('b', None)
+('c', None)

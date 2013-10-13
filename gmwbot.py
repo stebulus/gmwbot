@@ -138,6 +138,50 @@ class binarysearcher(object):
             else:
                 yield (self._words[i], self._words[j])
 
+def array(n):
+    a = []
+    for i in range(n):
+        a.append([None]*n)
+    return a
+class obstsearcher(object):
+    def __init__(self, words, intweights, extweights):
+        n = len(words)
+        p = [None] + intweights  # for 1-indexing as in Knuth
+        q = extweights
+        c = array(n+1)
+        r = array(n+1)
+        w = array(n+1)
+        for i in range(0,n+1):
+            c[i][i] = 0
+            w[i][i] = q[i]
+            for j in range(i+1,n+1):
+                w[i][j] = w[i][j-1] + p[j] + q[j]
+        for j in range(1,n+1):
+            c[j-1][j] = w[j-1][j]
+            r[j-1][j] = j
+        for d in range(2,n+1):
+            for j in range(d,n+1):
+                i = j-d
+                bestk = None
+                bestc = None
+                for k in range(r[i][j-1], r[i+1][j]+1):
+                    currc = c[i][k-1] + c[k][j]
+                    if bestk is None or currc < bestc:
+                        bestk = k
+                        bestc = currc
+                c[i][j] = w[i][j] + bestc
+                r[i][j] = bestk
+        self._words = words
+        self._c = c
+        self._r = r
+        self._w = w
+    def cost(self,i,j):
+        return self._c[i][j]
+    def root(self,i,j):
+        return self._r[i][j]
+    def weight(self,i,j):
+        return self._w[i][j]
+
 class searchseq(object):
     def __init__(self, *searchers):
         self._searchers = searchers

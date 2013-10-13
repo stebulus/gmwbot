@@ -254,6 +254,12 @@ class searchseq(object):
                     return
             left,right = a,b
 
+def topobst(words, weights, topwords):
+    return searchseq(
+        binarysearcher(topwords),
+        delayedobst(words, weights, [0]*(len(weights)+1))
+        )
+
 class HTMLFormParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)

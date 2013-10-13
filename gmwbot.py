@@ -7,6 +7,12 @@ from urlparse import urljoin
 
 class Error(Exception):
     pass
+class NonwordError(Error):
+    def __init__(self, nonword, response):
+        Error.__init__(self,
+            "gmw server says '%s' is not a word" % nonword)
+        self.nonword = nonword
+        self.response = response
 
 class gmwclient(object):
     def __init__(self, url, request, by='joon', leaderboardname=None):
@@ -29,6 +35,8 @@ class gmwclient(object):
         upper = formget01(self.form, 'upper')
         if result.result is None:
             raise Error('could not interpret reply from GMW')
+        if result.result == 'nonword':
+            raise NonwordError(other, resp)
         if result.result > 0 and (self.lower is None or other > self.lower):
             self.lower = other
         if result.result < 0 and (self.upper is None or other < self.upper):
@@ -70,6 +78,8 @@ class GMWResultParser(HTMLParser):
             self.result = -1
         elif text.startswith('My word is after '):
             self.result = 1
+        elif text.startswith("I couldn't find "):
+            self.result = 'nonword'
 
 class throttledfunc(object):
     def __init__(self, mingap, func):

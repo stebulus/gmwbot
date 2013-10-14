@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+import gmwbot
+
+topwords = []
+with open('topwords') as fp:
+    for line in fp:
+        word = line.rstrip().split(None,1)[0]
+        topwords.append(word)
+words = []
+weights = []
+with open('twlwordweight') as fp:
+    for line in fp:
+        word, weight = line.rstrip().split()
+        words.append(word)
+        weights.append(float(weight))
+
+search = gmwbot.topobst(words, weights, topwords)
+for x in search('vicissitudes'):
+    print x
+print
+for x in search('venality'):
+    print x
+print
+for x in search('cromulent'):
+    print x
+print

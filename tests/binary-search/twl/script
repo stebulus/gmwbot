@@ -8,6 +8,6 @@ with open('twl') as twl:
 search = gmwbot.binarysearcher(words)
 for word in ['taco', 'orrery', 'alibaba']:
     print 'Searching for', repr(word)
-    result = search(gmwbot.cmplog(word))
-    print 'result:', result
+    for x in search(word):
+        print x
     print

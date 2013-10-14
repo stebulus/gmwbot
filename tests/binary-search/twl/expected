@@ -1,60 +1,60 @@
 Searching for 'taco'
-? > lunk
-? > reviews
-? > tabbying
-? < unfluted
-? < tows
-? < theca
-? < technologize
-? < tannoy
-? < takahe
-? > tacnode
-? < tahrs
-? < taenias
-? < tactilities
-? < tactfully
-? < tacos
-? = taco
-result: taco
+(None, None)
+('lunk', None)
+('reviews', None)
+('tabbying', None)
+('tabbying', 'unfluted')
+('tabbying', 'tows')
+('tabbying', 'theca')
+('tabbying', 'technologize')
+('tabbying', 'tannoy')
+('tabbying', 'takahe')
+('tacnode', 'takahe')
+('tacnode', 'tahrs')
+('tacnode', 'taenias')
+('tacnode', 'tactilities')
+('tacnode', 'tactfully')
+('tacnode', 'tacos')
+(True, 'taco')
 
 Searching for 'orrery'
-? > lunk
-? < reviews
-? < paretic
-? > negotiation
-? > oreodont
-? < overgeneralized
-? < outmastered
-? < outages
-? < os
-? > ornamentally
-? < orrices
-? > orographical
-? > orphanhood
-? > orphreys
-? > orpines
-? > orreries
-? = orrery
-result: orrery
+(None, None)
+('lunk', None)
+('lunk', 'reviews')
+('lunk', 'paretic')
+('negotiation', 'paretic')
+('oreodont', 'paretic')
+('oreodont', 'overgeneralized')
+('oreodont', 'outmastered')
+('oreodont', 'outages')
+('oreodont', 'os')
+('ornamentally', 'os')
+('ornamentally', 'orrices')
+('orographical', 'orrices')
+('orphanhood', 'orrices')
+('orphreys', 'orrices')
+('orpines', 'orrices')
+('orreries', 'orrices')
+(True, 'orrery')
 
 Searching for 'alibaba'
-? < lunk
-? < distained
-? < captioning
-? < bacons
-? < anglicize
-? > agglutinations
-? < alphameric
-? > aldolase
-? < allegorically
-? < alienist
-? > algarobas
-? > algorithm
-? < alien
-? < alibi
-? > algum
-? > aliases
-? > aliasing
-? > aliasings
-result: None
+(None, None)
+(None, 'lunk')
+(None, 'distained')
+(None, 'captioning')
+(None, 'bacons')
+(None, 'anglicize')
+('agglutinations', 'anglicize')
+('agglutinations', 'alphameric')
+('aldolase', 'alphameric')
+('aldolase', 'allegorically')
+('aldolase', 'alienist')
+('algarobas', 'alienist')
+('algorithm', 'alienist')
+('algorithm', 'alien')
+('algorithm', 'alibi')
+('algum', 'alibi')
+('aliases', 'alibi')
+('aliasing', 'alibi')
+('aliasings', 'alibi')
 

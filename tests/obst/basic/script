@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+import gmwbot
+
+search = gmwbot.obstsearcher(
+    ['a','b','c'],
+    [1,3,2],
+    [4,5,1,3])
+print 'cost'
+for j in range(4):
+    for i in range(j+1):
+        print '%2d' % search.cost(i,j),
+    print
+print
+print 'root'
+for j in range(4):
+    for i in range(j+1):
+        print '%2s' % search.root(i,j),
+    print
+print
+print 'weight'
+for j in range(4):
+    for i in range(j+1):
+        print '%2d' % search.weight(i,j),
+    print

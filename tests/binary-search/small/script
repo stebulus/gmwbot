@@ -15,6 +15,6 @@ words = [
 search = gmwbot.binarysearcher(words)
 for word in [words[3], 'taco', words[0], words[-1]]:
     print 'Searching for', repr(word)
-    result = search(gmwbot.cmplog(word))
-    print 'result:', result
+    for x in search(word):
+        print x
     print

@@ -1,0 +1,5 @@
+#!/bin/sh
+awk 'NR%650==0 {print $1}' twlwordweight \
+| (while read word; do
+    grep -C25 "^$word " twlwordweight |sort -n -k2 |tail -1;
+    done)

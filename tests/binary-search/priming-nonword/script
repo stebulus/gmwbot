@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+from string import ascii_lowercase
+import gmwbot
+
+search = gmwbot.binarysearcher(list(ascii_lowercase))
+for x in search('quixotic', left='noid', right='ululate'):
+    print x

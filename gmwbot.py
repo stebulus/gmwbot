@@ -57,7 +57,7 @@ class gmwclient(object):
             self.form = None
         return result.result
 
-class GMWResultParser(HTMLParser):
+class ParagraphTextParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self._p = 0
@@ -75,6 +75,7 @@ class GMWResultParser(HTMLParser):
             if self._p == 0:
                 self.handle_p(''.join(self._data))
                 self._data = []
+class GMWResultParser(ParagraphTextParser):
     def handle_p(self, text):
         if text == 'You guessed it! well done.':
             self.result = 0
@@ -84,24 +85,7 @@ class GMWResultParser(HTMLParser):
             self.result = 1
         elif text.startswith("I couldn't find "):
             self.result = 'nonword'
-class GMWInitialParser(HTMLParser):
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self._p = 0
-        self._data = []
-        self.wordtime = None
-    def handle_starttag(self, tag, attrs):
-        if tag == 'p':
-            self._p += 1
-    def handle_data(self, data):
-        if self._p > 0:
-            self._data.append(data)
-    def handle_endtag(self, tag):
-        if tag == 'p':
-            self._p -= 1
-            if self._p == 0:
-                self.handle_p(''.join(self._data))
-                self._data = []
+class GMWInitialParser(ParagraphTextParser):
     def handle_p(self, text):
         if text.startswith('This word was updated on '):
             self.wordtime = datetime.strptime(

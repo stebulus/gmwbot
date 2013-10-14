@@ -222,25 +222,32 @@ class delayedobst(object):
         self._words = words
         self._intweights = intweights
         self._extweights = extweights
+        self._left = None
+        self._right = None
+        self._obst = None
     def __call__(self, word, left=None, right=None):
-        bin = binarysearcher(self._words)
-        if left is None:
-            lft = 0
-        else:
-            i,j = bin.index(left)
-            if i is True:
-                lft = j
+        if left != self._left or right != self._right \
+                or self._obst is None:
+            bin = binarysearcher(self._words)
+            if left is None:
+                lft = 0
             else:
-                lft = j-1
-        if right is None:
-            rt = len(self._words)-1
-        else:
-            i,j = bin.index(right)
-            rt = j
-        obst = obstsearcher(self._words[lft:rt+1],
-            self._intweights[lft:rt+1],
-            self._extweights[lft:rt+2])
-        for x in obst(word, left, right):
+                i,j = bin.index(left)
+                if i is True:
+                    lft = j
+                else:
+                    lft = j-1
+            if right is None:
+                rt = len(self._words)-1
+            else:
+                i,j = bin.index(right)
+                rt = j
+            self._obst = obstsearcher(self._words[lft:rt+1],
+                self._intweights[lft:rt+1],
+                self._extweights[lft:rt+2])
+            self._left = left
+            self._right = right
+        for x in self._obst(word, left, right):
             yield x
 
 class searchseq(object):

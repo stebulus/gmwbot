@@ -1,0 +1,65 @@
+GMW: GET http://example.com/
+GMW: initial request
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: lunisolar
+<p>Your guesses so far:</p>
+<ol>
+<li><span style="color:blue">lunisolar</span></li>
+</ol>
+<p align="center">My word is after lunisolar.</p>
+<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+<div align="center">What is your guess?
+<input type="text" name="guess" size="15" maxlength="15">
+<input type="submit" value="Guess">
+<input type="submit" name="result" value="I give up! Tell me!" value="no">
+</div>
+<input type="hidden" name="by" value="joon">
+<input type="hidden" name="date" value="">
+<input type="hidden" name="starttime" value="1234">
+<input type="hidden" name="guesses" value="lunisolar">
+<input type="hidden" name="lower" value="lunisolar">
+</form>
+
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: nonword
+<p>Your guesses so far:</p>
+<ol>
+<li><span style="color:blue">lunisolar</span></li>
+</ol>
+<p align="center">I couldn't find nonword in my dictionary.  Remember, you're only allowed to guess words.</p>
+<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+<div align="center">What is your guess?
+<input type="text" name="guess" size="15" maxlength="15">
+<input type="submit" value="Guess">
+<input type="submit" name="result" value="I give up! Tell me!" value="no">
+</div>
+<input type="hidden" name="by" value="joon">
+<input type="hidden" name="date" value="">
+<input type="hidden" name="starttime" value="1234">
+<input type="hidden" name="guesses" value="lunisolar">
+<input type="hidden" name="lower" value="lunisolar">
+</form>
+
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: word
+<p>Your guesses so far:</p>
+<ol>
+<li><span style="color:blue">lunisolar</span></li>
+<li><span style="color:red">word</span></li>
+</ol>
+<p align="center">My word is before word.</p>
+<form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
+<div align="center">What is your guess?
+<input type="text" name="guess" size="15" maxlength="15">
+<input type="submit" value="Guess">
+<input type="submit" name="result" value="I give up! Tell me!" value="no">
+</div>
+<input type="hidden" name="by" value="joon">
+<input type="hidden" name="date" value="">
+<input type="hidden" name="starttime" value="1234">
+<input type="hidden" name="guesses" value="lunisolar">
+<input type="hidden" name="guesses" value="word">
+<input type="hidden" name="lower" value="lunisolar">
+<input type="hidden" name="upper" value="word">
+</form>
+

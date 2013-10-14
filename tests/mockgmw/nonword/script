@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+import gmwbot
+import gmwbottest
+import sys
+
+gmw = gmwbottest.mockgmw(sys.stdout)
+gmw.time = 1234
+gmw.word = 'sable'
+
+conn = gmwbottest.mockrequests(gmw)
+reply = conn.request("GET", "http://example.com/")
+
+form = gmwbot.htmlform.fromstr(reply.content, baseurl=reply.url)
+for i,(typ,nam,val) in enumerate(form.controls):
+    if nam == 'guess':
+        form.controls[i] = typ,nam,'lunisolar'
+reply = form.submit(conn.request)
+print reply.content
+
+form = gmwbot.htmlform.fromstr(reply.content, baseurl=reply.url)
+for i,(typ,nam,val) in enumerate(form.controls):
+    if nam == 'guess':
+        form.controls[i] = typ,nam,'nonword'
+gmw.nonword = True
+reply = form.submit(conn.request)
+print reply.content
+
+form = gmwbot.htmlform.fromstr(reply.content, baseurl=reply.url)
+for i,(typ,nam,val) in enumerate(form.controls):
+    if nam == 'guess':
+        form.controls[i] = typ,nam,'word'
+reply = form.submit(conn.request)
+print reply.content

@@ -1,0 +1,8 @@
+GMW: GET http://example.com/?by=joon
+GMW: initial request
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: nonword
+gmw server says 'nonword' is not a word
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: word
+-1

@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+import gmwbot
+
+search = gmwbot.obstsearcher(
+    ['a','b','c'],
+    [1,3,2],
+    [4,5,1,3])
+
+for x in search('ax', left=None, right='bl'):
+    print x
+print
+for x in search('ax', left='am', right=None):
+    print x
+print
+for x in search('ax', left='al', right='bl'):
+    print x
+print

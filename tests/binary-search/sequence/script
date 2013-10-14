@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+from string import ascii_lowercase
+import gmwbot
+
+one = gmwbot.binarysearcher(list(ascii_lowercase))
+two = gmwbot.binarysearcher(
+    [x+y for x in ascii_lowercase for y in ascii_lowercase])
+search = gmwbot.searchseq(one, two)
+
+for x in search('q'):
+    print x
+print
+for x in search('qu'):
+    print x
+print
+for x in search('qui'):
+    print x
+print

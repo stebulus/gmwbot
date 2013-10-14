@@ -8,11 +8,10 @@ server.word = 'rascal'
 req = gmwbottest.mockrequests(server)
 client = gmwbot.gmwclient('http://example.com/', req.request)
 
-words = []
-with open('twl') as twl:
-    for line in twl:
-        words.append(line.rstrip())
-search = gmwbot.binarysearcher(words)
+server.nonword = True
+try:
+    print cmp(client, 'nonword')
+except gmwbot.NonwordError, e:
+    print e
 
-for x in search(client):
-    print x
+print cmp(client, 'word')

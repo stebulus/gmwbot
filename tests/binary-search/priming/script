@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+from string import ascii_lowercase
+import gmwbot
+
+words = list(ascii_lowercase)
+search = gmwbot.binarysearcher(words)
+
+for x in search('quixotic', left='g', right=None):
+    print x
+print
+
+for x in search('quixotic', left=None, right='t'):
+    print x
+print
+
+for x in search('quixotic', left='n', right='t'):
+    print x
+print

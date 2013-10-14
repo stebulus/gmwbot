@@ -1,57 +1,57 @@
 GMW: GET http://example.com/?by=joon
 GMW: initial request
+(None, None)
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: lunk
-? > lunk
+('lunk', None)
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: reviews
-? < reviews
+('lunk', 'reviews')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: paretic
-? > paretic
+('paretic', 'reviews')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: prom
-? > prom
+('prom', 'reviews')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: recombs
-? < recombs
+('prom', 'recombs')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: queasy
-? > queasy
+('queasy', 'recombs')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: raspers
-? < raspers
+('queasy', 'raspers')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: radioecologies
-? > radioecologies
+('radioecologies', 'raspers')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rambouillet
-? > rambouillet
+('rambouillet', 'raspers')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rankings
-? > rankings
+('rankings', 'raspers')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rappelling
-? > rappelling
+('rappelling', 'raspers')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rarely
-? > rarely
+('rarely', 'raspers')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rascals
-? < rascals
+('rarely', 'rascals')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rarifying
-? > rarifying
+('rarifying', 'rascals')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rasbora
-? > rasbora
+('rasbora', 'rascals')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rascalities
-? < rascalities
+('rasbora', 'rascalities')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rasboras
-? > rasboras
+('rasboras', 'rascalities')
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: rascal
-? = rascal
-result: rascal
+(True, 'rascal')

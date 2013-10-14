@@ -139,6 +139,7 @@ class mockgmw():
         self._replacelower = None
         self._logfile = logfile
         self.action = '/~pahk/dictionary/guess.cgi'
+        self.nonword = False
     def _log(self, msg):
         if self._logfile is not None:
             print >>self._logfile, msg
@@ -173,19 +174,22 @@ class mockgmw():
                 return [self._LEADERBOARD]
             else:
                 self._log('GMW: guess: %s' % (guess,))
-                guesses.append(guess)
-                c = cmp(self.word, guess)
-                if c > 0 and (lower is None or lower < guess):
-                    lower = guess
-                if c < 0 and (upper is None or upper > guess):
-                    upper = guess
+                if self.nonword:
+                    c = None
+                else:
+                    guesses.append(guess)
+                    c = cmp(self.word, guess)
+                    if c > 0 and (lower is None or lower < guess):
+                        lower = guess
+                    if c < 0 and (upper is None or upper > guess):
+                        upper = guess
 
-                if self._replacelower is not None:
-                    lower = self._replacelower
-                    self._replacelower = None
-                if self._replaceupper is not None:
-                    upper = self._replaceupper
-                    self._replaceupper = None
+                    if self._replacelower is not None:
+                        lower = self._replacelower
+                        self._replacelower = None
+                    if self._replaceupper is not None:
+                        upper = self._replaceupper
+                        self._replaceupper = None
 
                 start_response("200 OK", [('Content-Type', 'text/html')])
                 output = []
@@ -201,7 +205,9 @@ class mockgmw():
                     output.append('<li><span style="color:%(color)s">%(guess)s</span></li>\n' % {'guess': g, 'color': color})
                 output.append('</ol>\n')
                 output.append('<p align="center">')
-                if c == 0:
+                if self.nonword:
+                    output.append("I couldn't find %s in my dictionary.  Remember, you're only allowed to guess words." % guess)
+                elif c == 0:
                     output.append('You guessed it! well done.')
                 else:
                     output.append('My word is ')
@@ -230,6 +236,7 @@ class mockgmw():
                     if upper is not None:
                         output.append(self._hidden('upper',upper))
                 output.append('</form>\n')
+                self.nonword = False
                 return output
 
     def replaceupper(self, upper):

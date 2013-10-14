@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division
+from datetime import datetime
 from HTMLParser import HTMLParser
 from time import time, sleep
 from urllib import urlencode
@@ -19,6 +20,9 @@ class gmwclient(object):
         self._request = request
         resp = self._request('GET', url, params={'by': by})
         self.form = htmlform.fromstr(resp.content, baseurl=resp.url)
+        initp = GMWInitialParser()
+        initp.feed(resp.content)
+        self.wordtime = initp.wordtime
         self.lower = None
         self.upper = None
         self.leaderboardname = leaderboardname
@@ -53,7 +57,7 @@ class gmwclient(object):
             self.form = None
         return result.result
 
-class GMWResultParser(HTMLParser):
+class ParagraphTextParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self._p = 0
@@ -71,6 +75,7 @@ class GMWResultParser(HTMLParser):
             if self._p == 0:
                 self.handle_p(''.join(self._data))
                 self._data = []
+class GMWResultParser(ParagraphTextParser):
     def handle_p(self, text):
         if text == 'You guessed it! well done.':
             self.result = 0
@@ -80,6 +85,12 @@ class GMWResultParser(HTMLParser):
             self.result = 1
         elif text.startswith("I couldn't find "):
             self.result = 'nonword'
+class GMWInitialParser(ParagraphTextParser):
+    def handle_p(self, text):
+        if text.startswith('This word was updated on '):
+            self.wordtime = datetime.strptime(
+                text.split('.',1)[0],
+                'This word was updated on %H:%M Eastern, %m/%d/%Y')
 
 class throttledfunc(object):
     def __init__(self, mingap, func):
@@ -412,5 +423,6 @@ if __name__ == '__main__':
         return requests.request(*args, **kwargs)
     gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
         by=by, leaderboardname=strategy)
+    print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
     for x in search(gmw):
         print x

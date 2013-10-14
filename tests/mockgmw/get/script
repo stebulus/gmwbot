@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 import gmwbottest
+from datetime import datetime
 import sys
 
-gmwbottest.dumpresponse(gmwbottest.mockgmw(sys.stdout),
+server = gmwbottest.mockgmw(sys.stdout)
+server.wordtime = datetime(2013,10,14,9,1)
+gmwbottest.dumpresponse(server,
     "GET", "http://example.com/")

@@ -2,6 +2,7 @@ GMW: GET http://example.com/
 GMW: initial request
 200
 
+<p>This word was updated on 09:01 Eastern, 10/14/2013.</p>
 <form action="/~pahk/dictionary/guess.cgi" method="post" name="myform">
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">

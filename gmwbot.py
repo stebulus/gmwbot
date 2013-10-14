@@ -360,18 +360,49 @@ class cmplog(object):
 
 PAHK_URL='http://www.people.fas.harvard.edu/~pahk/dictionary/guess.cgi'
 
-if __name__ == '__main__':
-    import sys
-    if len(sys.argv) != 2 or sys.argv[1] not in ['joon','mike']:
-        print >>sys.stderr, 'usage: %s (joon|mike)' % sys.argv[0]
-        sys.exit(2)
-    by = sys.argv[1]
-
+def strat_sjtbot1():
     words = []
     with open('8plus') as f:
         for line in f:
             words.append(line.strip().lower().split()[0])
-    search = binarysearcher(words)
+    return binarysearcher(words)
+def strat_sjtbot2():
+    topwords = []
+    with open('topwords') as fp:
+        for line in fp:
+            word = line.rstrip().split(None,1)[0]
+            topwords.append(word)
+    words = []
+    weights = []
+    with open('twlwordweight') as fp:
+        for line in fp:
+            word, weight = line.rstrip().split()
+            words.append(word)
+            weights.append(float(weight))
+    return topobst(words, weights, topwords)
+
+strategies = dict(
+    ((x[6:],globals()[x]) for x in globals()
+        if x.startswith('strat_'))
+    )
+
+def usage():
+    import sys
+    strats = strategies.keys()
+    strats.sort()
+    print >>sys.stderr, 'usage: %s (%s) (joon|mike)' \
+        % (sys.argv[0], '|'.join(strats))
+    sys.exit(2)
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) != 3:
+        usage()
+    strategy = sys.argv[1]
+    by = sys.argv[2]
+    if strategy not in strategies or by not in ['joon','mike']:
+        usage()
+    search = strategies[strategy]()
 
     import requests
     def request(*args, **kwargs):
@@ -380,6 +411,6 @@ if __name__ == '__main__':
             config['verbose'] = sys.stderr
         return requests.request(*args, **kwargs)
     gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
-        by=by, leaderboardname='sjtbot1')
+        by=by, leaderboardname=strategy)
     for x in search(gmw):
         print x

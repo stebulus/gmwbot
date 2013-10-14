@@ -423,5 +423,6 @@ if __name__ == '__main__':
         return requests.request(*args, **kwargs)
     gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
         by=by, leaderboardname=strategy)
+    print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
     for x in search(gmw):
         print x

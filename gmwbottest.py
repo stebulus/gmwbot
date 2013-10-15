@@ -1,7 +1,9 @@
+from datetime import datetime
 from StringIO import StringIO
 from urllib import urlencode, quote
 from urlparse import urlparse, parse_qs
 from requests.structures import CaseInsensitiveDict
+from time import strftime
 
 def reconstructurl(environ):
     url = environ['wsgi.url_scheme']+'://'
@@ -87,6 +89,7 @@ def dumpresponse(app, method, url, params=None, data=None, headers=None):
 class mockgmw():
     """A WSGI application imitating "Guess my word!", for testing purposes."""
     _FIRSTFORM = """\
+<p>This word was updated on %(wordtime)s.</p>
 <form action="%(action)s" method="post" name="myform">
 <div align="center">What is your guess?
 <input type="text" name="guess" size="15" maxlength="15">
@@ -140,6 +143,7 @@ class mockgmw():
         self._logfile = logfile
         self.action = '/~pahk/dictionary/guess.cgi'
         self.nonword = False
+        self.wordtime = datetime.now()
     def _log(self, msg):
         if self._logfile is not None:
             print >>self._logfile, msg
@@ -150,7 +154,11 @@ class mockgmw():
         if environ['REQUEST_METHOD'] == 'GET':
             self._log('GMW: initial request')
             start_response("200 OK", [])
-            return [self._FIRSTFORM % {'action': self.action}]
+            return [self._FIRSTFORM % {
+                'wordtime': self.wordtime.strftime(
+                    '%H:%M Eastern, %m/%d/%Y'),
+                'action': self.action
+                }]
         elif environ['REQUEST_METHOD'] == 'POST':
             try:
                 dataset = parse_qs(environ['wsgi.input'].read())

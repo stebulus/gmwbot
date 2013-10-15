@@ -1,5 +1,6 @@
 GMW: GET http://example.com/?by=joon
 GMW: initial request
+wordtime: 2011-08-07T06:05
 (None, None)
 GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
 GMW: guess: lunk

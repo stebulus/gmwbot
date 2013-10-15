@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from datetime import datetime
 import gmwbot
 import gmwbottest
 import sys
@@ -6,6 +7,7 @@ import sys
 gmw = gmwbottest.mockgmw(sys.stdout)
 gmw.time = 1234
 gmw.word = 'sable'
+gmw.wordtime = datetime(2012,1,2,3,4)
 
 conn = gmwbottest.mockrequests(gmw)
 reply = conn.request("GET", "http://example.com/")

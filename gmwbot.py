@@ -369,6 +369,15 @@ class cmplog(object):
         print '? %s %s' % (op, other)
         return c
 
+class cmpcount(object):
+    def __init__(self, cmpable):
+        self._cmpable = cmpable
+        self.count = 0
+    def __cmp__(self, other):
+        c = cmp(self._cmpable, other)
+        self.count += 1
+        return c
+
 PAHK_URL='http://www.people.fas.harvard.edu/~pahk/dictionary/guess.cgi'
 
 def strat_sjtbot1():
@@ -401,28 +410,39 @@ def usage():
     import sys
     strats = strategies.keys()
     strats.sort()
-    print >>sys.stderr, 'usage: %s (%s) (joon|mike)' \
-        % (sys.argv[0], '|'.join(strats))
+    strats = '|'.join(strats)
+    print >>sys.stderr, 'usage:'
+    print >>sys.stderr, '    %s (%s) (joon|mike)' % (sys.argv[0], strats)
+    print >>sys.stderr, '    %s (%s) test WORD [WORD ...]' % (sys.argv[0], strats)
     sys.exit(2)
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) != 3:
+    if len(sys.argv) < 3:
         usage()
     strategy = sys.argv[1]
     by = sys.argv[2]
-    if strategy not in strategies or by not in ['joon','mike']:
+    if strategy not in strategies \
+            or (len(sys.argv) == 3 and by not in ['joon','mike']) \
+            or (len(sys.argv) >= 4 and by != 'test'):
         usage()
     search = strategies[strategy]()
 
-    import requests
-    def request(*args, **kwargs):
-        config = kwargs.setdefault('config',{})
-        if 'verbose' not in config:
-            config['verbose'] = sys.stderr
-        return requests.request(*args, **kwargs)
-    gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
-        by=by, leaderboardname=strategy)
-    print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
-    for x in search(gmw):
-        print x
+    if by == 'test':
+        for word in sys.argv[3:]:
+            cc = cmpcount(word)
+            for x in search(cc):
+                print x
+            print word, cc.count
+    else:
+        import requests
+        def request(*args, **kwargs):
+            config = kwargs.setdefault('config',{})
+            if 'verbose' not in config:
+                config['verbose'] = sys.stderr
+            return requests.request(*args, **kwargs)
+        gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
+            by=by, leaderboardname=strategy)
+        print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
+        for x in search(gmw):
+            print x

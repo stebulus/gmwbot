@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division
+from bisect import bisect_left, bisect_right
 from datetime import datetime
 from HTMLParser import HTMLParser
 from time import time, sleep
@@ -206,20 +207,18 @@ class obstsearcher(object):
         # through p[rt] inclusive and external weights q[lft] through
         # q[rt] inclusive, i.e., for words known to be strictly
         # between words[lft] and words[rt+1].
-        bin = binarysearcher(self._words[1:-1])
         if left is None:
             lft = 0
         else:
-            i,j = bin.index(left)
-            if i is True:
-                lft = j+1
-            else:
-                lft = j
+            # lft is index of rightmost entry which is >= left
+            i = bisect_right(self._words, left, 1, len(self._words)-1)
+            lft = i-1
         if right is None:
             rt = len(self._words)-2
         else:
-            i,j = bin.index(right)
-            rt = j
+            # rt+1 is index of leftmost entry which is <= right
+            j = bisect_left(self._words, right, 1, len(self._words)-1)
+            rt = j-1
         yield (self._words[lft], self._words[rt+1])
         while lft < rt:
             mid = self.root(lft,rt)
@@ -274,20 +273,19 @@ class obstsearcher_sjtbot2(object):
         return self._w[i][j]
     def __call__(self, word, left=None, right=None):
         # Buggy implementation, kept for backwards compatibility.
-        bin = binarysearcher(self._words[1:-1])
         if left is None:
             lft = 1
         else:
-            i,j = bin.index(left)
-            if i is True:
-                lft = j+2
+            i = bisect_left(self._words, left, 1, len(self._words)-1)
+            if self._words[i] == left:
+                lft = i+1
             else:
-                lft = j+1
+                lft = i
         if right is None:
             rt = len(self._words)-2
         else:
-            i,j = bin.index(right)
-            rt = j
+            j = bisect_left(self._words, right, 1, len(self._words)-1)
+            rt = j-1
         yield (self._words[lft-1], self._words[rt+1])
         while lft <= rt:
             mid = self.root(lft,rt)
@@ -314,20 +312,18 @@ class delayedobst(object):
     def __call__(self, word, left=None, right=None):
         if left != self._left or right != self._right \
                 or self._obst is None:
-            bin = binarysearcher(self._words)
+            # lft is index of first word to consider
             if left is None:
                 lft = 0
             else:
-                i,j = bin.index(left)
-                if i is True:
-                    lft = j
-                else:
-                    lft = j-1
+                # lft is index of rightmost entry which is <= left
+                lft = bisect_right(self._words, left)-1
+            # rt is index of last word to consider
             if right is None:
                 rt = len(self._words)-1
             else:
-                i,j = bin.index(right)
-                rt = j
+                # rt is index of leftmost entry which is >= right
+                rt = bisect_left(self._words, right)
             self._obst = self._obstfactory(self._words[lft:rt+1],
                 self._intweights[lft:rt+1],
                 self._extweights[lft:rt+2])

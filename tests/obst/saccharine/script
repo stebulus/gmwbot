@@ -1,0 +1,10 @@
+#!/bin/sh
+# Verify the difference between sjtbot2 and sjtbot3 on 'saccharine'.
+
+# There was an off-by-one bug in the OBST implementation in sjtbot2
+# which caused it to make several bad choices at the end of this
+# search.
+
+./gmwbot.py sjtbot2 test saccharine
+echo
+./gmwbot.py sjtbot3 test saccharine

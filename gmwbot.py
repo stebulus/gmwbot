@@ -201,22 +201,27 @@ class obstsearcher(object):
     def weight(self,i,j):
         return self._w[i][j]
     def __call__(self, word, left=None, right=None):
+        # Following Knuth's setup, root(lft,rt) is the root of the
+        # optimal binary search tree for internal weights p[lft+1]
+        # through p[rt] inclusive and external weights q[lft] through
+        # q[rt] inclusive, i.e., for words known to be strictly
+        # between words[lft] and words[rt+1].
         bin = binarysearcher(self._words[1:-1])
         if left is None:
-            lft = 1
+            lft = 0
         else:
             i,j = bin.index(left)
             if i is True:
-                lft = j+2
-            else:
                 lft = j+1
+            else:
+                lft = j
         if right is None:
             rt = len(self._words)-2
         else:
             i,j = bin.index(right)
             rt = j
-        yield (self._words[lft-1], self._words[rt+1])
-        while lft <= rt:
+        yield (self._words[lft], self._words[rt+1])
+        while lft < rt:
             mid = self.root(lft,rt)
             r = self._words[mid]
             c = cmp(word, r)
@@ -226,8 +231,8 @@ class obstsearcher(object):
             elif c < 0:
                 rt = mid-1
             else:
-                lft = mid+1
-            yield (self._words[lft-1], self._words[rt+1])
+                lft = mid
+            yield (self._words[lft], self._words[rt+1])
 class obstsearcher_sjtbot2(object):
     def __init__(self, words, intweights, extweights):
         n = len(words)

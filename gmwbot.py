@@ -201,6 +201,78 @@ class obstsearcher(object):
     def weight(self,i,j):
         return self._w[i][j]
     def __call__(self, word, left=None, right=None):
+        # Following Knuth's setup, root(lft,rt) is the root of the
+        # optimal binary search tree for internal weights p[lft+1]
+        # through p[rt] inclusive and external weights q[lft] through
+        # q[rt] inclusive, i.e., for words known to be strictly
+        # between words[lft] and words[rt+1].
+        bin = binarysearcher(self._words[1:-1])
+        if left is None:
+            lft = 0
+        else:
+            i,j = bin.index(left)
+            if i is True:
+                lft = j+1
+            else:
+                lft = j
+        if right is None:
+            rt = len(self._words)-2
+        else:
+            i,j = bin.index(right)
+            rt = j
+        yield (self._words[lft], self._words[rt+1])
+        while lft < rt:
+            mid = self.root(lft,rt)
+            r = self._words[mid]
+            c = cmp(word, r)
+            if c == 0:
+                yield (True, r)
+                break
+            elif c < 0:
+                rt = mid-1
+            else:
+                lft = mid
+            yield (self._words[lft], self._words[rt+1])
+class obstsearcher_sjtbot2(object):
+    def __init__(self, words, intweights, extweights):
+        n = len(words)
+        p = [None] + intweights  # for 1-indexing as in Knuth
+        q = extweights
+        c = array(n+1)
+        r = array(n+1)
+        w = array(n+1)
+        for i in range(0,n+1):
+            c[i][i] = 0
+            w[i][i] = q[i]
+            r[i][i] = i
+            for j in range(i+1,n+1):
+                w[i][j] = w[i][j-1] + p[j] + q[j]
+        for j in range(1,n+1):
+            c[j-1][j] = w[j-1][j]
+            r[j-1][j] = j
+        for d in range(2,n+1):
+            for j in range(d,n+1):
+                i = j-d
+                bestk = None
+                bestc = None
+                for k in range(r[i][j-1], r[i+1][j]+1):
+                    currc = c[i][k-1] + c[k][j]
+                    if bestk is None or currc < bestc:
+                        bestk = k
+                        bestc = currc
+                c[i][j] = w[i][j] + bestc
+                r[i][j] = bestk
+        self._words = [None] + words + [None]
+        self._c = c
+        self._r = r
+        self._w = w
+    def cost(self,i,j):
+        return self._c[i][j]
+    def root(self,i,j):
+        return self._r[i][j]
+    def weight(self,i,j):
+        return self._w[i][j]
+    def __call__(self, word, left=None, right=None):
         bin = binarysearcher(self._words[1:-1])
         if left is None:
             lft = 1
@@ -229,12 +301,14 @@ class obstsearcher(object):
                 lft = mid+1
             yield (self._words[lft-1], self._words[rt+1])
 class delayedobst(object):
-    def __init__(self, words, intweights, extweights):
+    def __init__(self, words, intweights, extweights,
+            obstfactory=obstsearcher):
         self._words = words
         self._intweights = intweights
         self._extweights = extweights
         self._left = None
         self._right = None
+        self._obstfactory = obstfactory
         self._obst = None
     def __call__(self, word, left=None, right=None):
         if left != self._left or right != self._right \
@@ -253,7 +327,7 @@ class delayedobst(object):
             else:
                 i,j = bin.index(right)
                 rt = j
-            self._obst = obstsearcher(self._words[lft:rt+1],
+            self._obst = self._obstfactory(self._words[lft:rt+1],
                 self._intweights[lft:rt+1],
                 self._extweights[lft:rt+2])
             self._left = left
@@ -272,10 +346,11 @@ class searchseq(object):
                     return
             left,right = a,b
 
-def topobst(words, weights, topwords):
+def topobst(words, weights, topwords, obstfactory=obstsearcher):
     return searchseq(
         binarysearcher(topwords),
-        delayedobst(words, weights, [0]*(len(weights)+1))
+        delayedobst(words, weights, [0]*(len(weights)+1),
+            obstfactory=obstfactory)
         )
 
 class HTMLFormParser(HTMLParser):
@@ -386,7 +461,7 @@ def strat_sjtbot1():
         for line in f:
             words.append(line.strip().lower().split()[0])
     return binarysearcher(words)
-def strat_sjtbot2():
+def load_topobst_data():
     topwords = []
     with open('topwords') as fp:
         for line in fp:
@@ -399,7 +474,12 @@ def strat_sjtbot2():
             word, weight = line.rstrip().split()
             words.append(word)
             weights.append(float(weight))
-    return topobst(words, weights, topwords)
+    return words, weights, topwords
+def strat_sjtbot2():
+    return topobst(*load_topobst_data(),
+        obstfactory=obstsearcher_sjtbot2)
+def strat_sjtbot3():
+    return topobst(*load_topobst_data())
 
 strategies = dict(
     ((x[6:],globals()[x]) for x in globals()

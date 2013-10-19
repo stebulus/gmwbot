@@ -461,7 +461,7 @@ def strat_sjtbot1():
         for line in f:
             words.append(line.strip().lower().split()[0])
     return binarysearcher(words)
-def strat_sjtbot2():
+def load_topobst_data():
     topwords = []
     with open('topwords') as fp:
         for line in fp:
@@ -474,22 +474,12 @@ def strat_sjtbot2():
             word, weight = line.rstrip().split()
             words.append(word)
             weights.append(float(weight))
-    return topobst(words, weights, topwords,
+    return words, weights, topwords
+def strat_sjtbot2():
+    return topobst(*load_topobst_data(),
         obstfactory=obstsearcher_sjtbot2)
 def strat_sjtbot3():
-    topwords = []
-    with open('topwords') as fp:
-        for line in fp:
-            word = line.rstrip().split(None,1)[0]
-            topwords.append(word)
-    words = []
-    weights = []
-    with open('twlwordweight') as fp:
-        for line in fp:
-            word, weight = line.rstrip().split()
-            words.append(word)
-            weights.append(float(weight))
-    return topobst(words, weights, topwords)
+    return topobst(*load_topobst_data())
 
 strategies = dict(
     ((x[6:],globals()[x]) for x in globals()

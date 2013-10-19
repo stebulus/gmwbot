@@ -15,6 +15,8 @@ class NonwordError(Error):
             "gmw server says '%s' is not a word" % nonword)
         self.nonword = nonword
         self.response = response
+class NoGuessError(Error):
+    pass
 
 class gmwclient(object):
     def __init__(self, url, request, by='joon', leaderboardname=None):
@@ -156,6 +158,26 @@ class binarysearcher(object):
             return i,j-1
         else:
             return i-1,j-1
+class binaryguesser(object):
+    def __init__(self, words):
+        self._words = words
+    def __call__(self, left, right):
+        # index of sought word is strictly between i and j
+        if left is None:
+            i = -1
+        else:
+            # i is index of rightmost entry which is <= left
+            i = bisect_right(self._words, left)-1
+        if right is None:
+            j = len(self._words)
+        else:
+            # j is index of leftmost entry which is >= right
+            j = bisect_left(self._words, right)
+        if i >= j:
+            raise ValueError((left,right))
+        if i == j-1:
+            raise NoGuessError((left,right))
+        return self._words[(i+j)//2]
 
 def array(n):
     a = []

@@ -346,16 +346,11 @@ class searchseq(object):
                     return
             left,right = a,b
 
-def topobst(words, weights, topwords):
-    return searchseq(
-        binarysearcher(topwords),
-        delayedobst(words, weights, [0]*(len(weights)+1))
-        )
-def topobst_sjtbot2(words, weights, topwords):
+def topobst(words, weights, topwords, obstfactory=obstsearcher):
     return searchseq(
         binarysearcher(topwords),
         delayedobst(words, weights, [0]*(len(weights)+1),
-            obstsearcher_sjtbot2)
+            obstfactory=obstfactory)
         )
 
 class HTMLFormParser(HTMLParser):
@@ -479,7 +474,8 @@ def strat_sjtbot2():
             word, weight = line.rstrip().split()
             words.append(word)
             weights.append(float(weight))
-    return topobst_sjtbot2(words, weights, topwords)
+    return topobst(words, weights, topwords,
+        obstfactory=obstsearcher_sjtbot2)
 def strat_sjtbot3():
     topwords = []
     with open('topwords') as fp:

@@ -5,7 +5,7 @@ words = []
 with open('twl') as twl:
     for line in twl:
         words.append(line.rstrip())
-search = gmwbot.binarysearcher(words)
+search = gmwbot.searcher(gmwbot.binaryguesser(words))
 for word in ['taco', 'orrery', 'alibaba']:
     print 'Searching for', repr(word)
     for x in search(word):

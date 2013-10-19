@@ -112,52 +112,6 @@ def throttled(mingap):  # for use as decorator
         return throttledfunc(mingap, func)
     return throttle
 
-class binarysearcher(object):
-    def __init__(self, words):
-        self._words = [None] + words + [None]
-    def _indexsearch(self, word, left=None, right=None):
-        if left is None:
-            left = 0
-        if right is None:
-            right = len(self._words)-1
-        yield (left, right)
-        while left+1 < right:
-            mid = (left+right)//2
-            c = cmp(word, self._words[mid])
-            if c == 0:
-                yield (True, mid)
-                break
-            elif c < 0:
-                right = mid
-            else:
-                left = mid
-            yield (left, right)
-    def __call__(self, word, left=None, right=None):
-        if left is None:
-            lft = 0
-        else:
-            i, j = self.index(left)
-            if i is True:
-                lft = j+1
-            else:
-                lft = i+1
-        if right is None:
-            rt = len(self._words)-1
-        else:
-            i, j = self.index(right)
-            rt = j+1
-        for i,j in self._indexsearch(word, lft, rt):
-            if i is True:
-                yield (True, self._words[j])
-            else:
-                yield (self._words[i], self._words[j])
-    def index(self, word):
-        for i,j in self._indexsearch(word):
-            pass
-        if i is True:
-            return i,j-1
-        else:
-            return i-1,j-1
 class binaryguesser(object):
     def __init__(self, words):
         self._words = words
@@ -386,7 +340,7 @@ class searchseq(object):
 
 def topobst(words, weights, topwords, obstfactory=obstsearcher):
     return searchseq(
-        binarysearcher(topwords),
+        searcher(binaryguesser(topwords)),
         delayedobst(words, weights, [0]*(len(weights)+1),
             obstfactory=obstfactory)
         )
@@ -498,7 +452,7 @@ def strat_sjtbot1():
     with open('8plus') as f:
         for line in f:
             words.append(line.strip().lower().split()[0])
-    return binarysearcher(words)
+    return searcher(binaryguesser(words))
 def load_topobst_data():
     topwords = []
     with open('topwords') as fp:

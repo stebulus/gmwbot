@@ -301,12 +301,14 @@ class obstsearcher_sjtbot2(object):
                 lft = mid+1
             yield (self._words[lft-1], self._words[rt+1])
 class delayedobst(object):
-    def __init__(self, words, intweights, extweights):
+    def __init__(self, words, intweights, extweights,
+            obstfactory=obstsearcher):
         self._words = words
         self._intweights = intweights
         self._extweights = extweights
         self._left = None
         self._right = None
+        self._obstfactory = obstfactory
         self._obst = None
     def __call__(self, word, left=None, right=None):
         if left != self._left or right != self._right \
@@ -325,39 +327,7 @@ class delayedobst(object):
             else:
                 i,j = bin.index(right)
                 rt = j
-            self._obst = obstsearcher(self._words[lft:rt+1],
-                self._intweights[lft:rt+1],
-                self._extweights[lft:rt+2])
-            self._left = left
-            self._right = right
-        for x in self._obst(word, left, right):
-            yield x
-class delayedobst_sjtbot2(object):
-    def __init__(self, words, intweights, extweights):
-        self._words = words
-        self._intweights = intweights
-        self._extweights = extweights
-        self._left = None
-        self._right = None
-        self._obst = None
-    def __call__(self, word, left=None, right=None):
-        if left != self._left or right != self._right \
-                or self._obst is None:
-            bin = binarysearcher(self._words)
-            if left is None:
-                lft = 0
-            else:
-                i,j = bin.index(left)
-                if i is True:
-                    lft = j
-                else:
-                    lft = j-1
-            if right is None:
-                rt = len(self._words)-1
-            else:
-                i,j = bin.index(right)
-                rt = j
-            self._obst = obstsearcher_sjtbot2(self._words[lft:rt+1],
+            self._obst = self._obstfactory(self._words[lft:rt+1],
                 self._intweights[lft:rt+1],
                 self._extweights[lft:rt+2])
             self._left = left
@@ -384,7 +354,8 @@ def topobst(words, weights, topwords):
 def topobst_sjtbot2(words, weights, topwords):
     return searchseq(
         binarysearcher(topwords),
-        delayedobst_sjtbot2(words, weights, [0]*(len(weights)+1))
+        delayedobst(words, weights, [0]*(len(weights)+1),
+            obstsearcher_sjtbot2)
         )
 
 class HTMLFormParser(HTMLParser):

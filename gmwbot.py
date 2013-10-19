@@ -178,6 +178,25 @@ class binaryguesser(object):
         if i == j-1:
             raise NoGuessError((left,right))
         return self._words[(i+j)//2]
+class searcher(object):
+    def __init__(self, guess):
+        self._guess = guess
+    def __call__(self, word, left=None, right=None):
+        while True:
+            yield (left, right)
+            try:
+                guess = self._guess(left, right)
+            except NoGuessError:
+                break
+            else:
+                c = cmp(word, guess)
+                if c == 0:
+                    yield (True, guess)
+                    break
+                elif c < 0:
+                    right = guess
+                else:
+                    left = guess
 
 def array(n):
     a = []

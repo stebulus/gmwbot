@@ -288,7 +288,10 @@ class delayedobst(object):
         self._obstfactory = obstfactory
         self._obst = None
     def __call__(self, left, right):
-        if left < self._left or right > self._right \
+        if (self._left is not None
+                    and (left is None or left < self._left)) \
+                or (self._right is not None
+                    and (right is None or right > self._right)) \
                 or self._obst is None:
             # lft is index of first word to consider
             if left is None:

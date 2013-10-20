@@ -157,7 +157,7 @@ def array(n):
     for i in range(n):
         a.append([None]*n)
     return a
-class obstsearcher(object):
+class obstguesser(object):
     def __init__(self, words, intweights, extweights):
         n = len(words)
         p = [None] + intweights  # for 1-indexing as in Knuth
@@ -196,7 +196,7 @@ class obstsearcher(object):
         return self._r[i][j]
     def weight(self,i,j):
         return self._w[i][j]
-    def __call__(self, word, left=None, right=None):
+    def __call__(self, left, right):
         # Following Knuth's setup, root(lft,rt) is the root of the
         # optimal binary search tree for internal weights p[lft+1]
         # through p[rt] inclusive and external weights q[lft] through
@@ -214,19 +214,11 @@ class obstsearcher(object):
             # rt+1 is index of leftmost entry which is <= right
             j = bisect_left(self._words, right, 1, len(self._words)-1)
             rt = j-1
-        yield (self._words[lft], self._words[rt+1])
-        while lft < rt:
-            mid = self.root(lft,rt)
-            r = self._words[mid]
-            c = cmp(word, r)
-            if c == 0:
-                yield (True, r)
-                break
-            elif c < 0:
-                rt = mid-1
-            else:
-                lft = mid
-            yield (self._words[lft], self._words[rt+1])
+        if lft == rt:
+            raise NoGuessError((left,right))
+        return self._words[self.root(lft,rt)]
+def obstsearcher(words, intweights, extweights):
+    return searcher(obstguesser(words, intweights, extweights))
 class obstsearcher_sjtbot2(object):
     def __init__(self, words, intweights, extweights):
         n = len(words)

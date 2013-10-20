@@ -274,23 +274,11 @@ class delayedobst(object):
             self._right = right
         return self._obst(left, right)
 
-class searchseq(object):
-    def __init__(self, *searchers):
-        self._searchers = searchers
-    def __call__(self, word, left=None, right=None):
-        for search in self._searchers:
-            for a,b in search(word, left, right):
-                yield (a,b)
-                if a is True:
-                    return
-            left,right = a,b
-
 def topobst(words, weights, topwords, obstfactory=obstguesser):
-    return searchseq(
-        searcher(binaryguesser(topwords)),
-        searcher(delayedobst(words, weights, [0]*(len(weights)+1),
+    return searcher(
+        binaryguesser(topwords),
+        delayedobst(words, weights, [0]*(len(weights)+1),
             obstfactory=obstfactory))
-        )
 
 class HTMLFormParser(HTMLParser):
     def __init__(self):

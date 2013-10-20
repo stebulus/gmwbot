@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+import gmwbot
+
+guesses = [['a'], ['q','m'], ['o']]
+for x in guesses:
+    x.reverse()
+def mockg(i):
+    def mockg(left,right):
+        if guesses[i]:
+            g = guesses[i][-1]
+            del guesses[i][-1]
+            return g
+        else:
+            raise gmwbot.NoGuessError((left,right))
+    return mockg
+search = gmwbot.searcher(*[mockg(i) for i in range(len(guesses))])
+for x in search('m'):
+    print x

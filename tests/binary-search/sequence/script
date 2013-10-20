@@ -2,10 +2,10 @@
 from string import ascii_lowercase
 import gmwbot
 
-one = gmwbot.binarysearcher(list(ascii_lowercase))
-two = gmwbot.binarysearcher(
+one = gmwbot.binaryguesser(list(ascii_lowercase))
+two = gmwbot.binaryguesser(
     [x+y for x in ascii_lowercase for y in ascii_lowercase])
-search = gmwbot.searchseq(one, two)
+search = gmwbot.searcher(one, two)
 
 for x in search('q'):
     print x

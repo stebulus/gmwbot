@@ -1,0 +1,9 @@
+  . a b c d e f g
+. d ! ! b b c c d
+a d ! ! b b c c d
+b d ! ! ! c c d d
+c e ! ! ! ! d d e
+d e ! ! ! ! ! e e
+e f ! ! ! ! ! ! f
+f ! ! ! ! ! ! ! !
+g ! ! ! ! ! ! ! !

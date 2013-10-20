@@ -3,7 +3,7 @@ from string import ascii_lowercase
 import gmwbot
 
 words = list(ascii_lowercase)
-search = gmwbot.binarysearcher(words)
+search = gmwbot.searcher(gmwbot.binaryguesser(words))
 
 for x in search('quixotic', left='g', right=None):
     print x

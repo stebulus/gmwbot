@@ -279,7 +279,7 @@ def obstsearcher_sjtbot2(words, intweights, extweights):
 
 class delayedobst(object):
     def __init__(self, words, intweights, extweights,
-            obstfactory=obstsearcher):
+            obstfactory=obstguesser):
         self._words = words
         self._intweights = intweights
         self._extweights = extweights
@@ -307,7 +307,8 @@ class delayedobst(object):
                 self._extweights[lft:rt+2])
             self._left = left
             self._right = right
-        for x in self._obst(word, left, right):
+            self._search = searcher(self._obst)
+        for x in self._search(word, left, right):
             yield x
 
 class searchseq(object):
@@ -321,7 +322,7 @@ class searchseq(object):
                     return
             left,right = a,b
 
-def topobst(words, weights, topwords, obstfactory=obstsearcher):
+def topobst(words, weights, topwords, obstfactory=obstguesser):
     return searchseq(
         searcher(binaryguesser(topwords)),
         delayedobst(words, weights, [0]*(len(weights)+1),
@@ -452,7 +453,7 @@ def load_topobst_data():
     return words, weights, topwords
 def strat_sjtbot2():
     return topobst(*load_topobst_data(),
-        obstfactory=obstsearcher_sjtbot2)
+        obstfactory=obstguesser_sjtbot2)
 def strat_sjtbot3():
     return topobst(*load_topobst_data())
 

@@ -273,6 +273,7 @@ class obstsearcher_sjtbot2(object):
     def weight(self,i,j):
         return self._w[i][j]
     def __call__(self, word, left=None, right=None):
+        # Buggy implementation, kept for backwards compatibility.
         bin = binarysearcher(self._words[1:-1])
         if left is None:
             lft = 1

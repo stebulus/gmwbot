@@ -219,7 +219,7 @@ class obstguesser(object):
         return self._words[self.root(lft,rt)]
 def obstsearcher(words, intweights, extweights):
     return searcher(obstguesser(words, intweights, extweights))
-class obstsearcher_sjtbot2(object):
+class obstguesser_sjtbot2(object):
     def __init__(self, words, intweights, extweights):
         n = len(words)
         p = [None] + intweights  # for 1-indexing as in Knuth
@@ -258,7 +258,7 @@ class obstsearcher_sjtbot2(object):
         return self._r[i][j]
     def weight(self,i,j):
         return self._w[i][j]
-    def __call__(self, word, left=None, right=None):
+    def __call__(self, left, right):
         # Buggy implementation, kept for backwards compatibility.
         if left is None:
             lft = 1
@@ -273,19 +273,10 @@ class obstsearcher_sjtbot2(object):
         else:
             j = bisect_left(self._words, right, 1, len(self._words)-1)
             rt = j-1
-        yield (self._words[lft-1], self._words[rt+1])
-        while lft <= rt:
-            mid = self.root(lft,rt)
-            r = self._words[mid]
-            c = cmp(word, r)
-            if c == 0:
-                yield (True, r)
-                break
-            elif c < 0:
-                rt = mid-1
-            else:
-                lft = mid+1
-            yield (self._words[lft-1], self._words[rt+1])
+        return self._words[self.root(lft,rt)]
+def obstsearcher_sjtbot2(words, intweights, extweights):
+    return searcher(obstguesser_sjtbot2(words, intweights, extweights))
+
 class delayedobst(object):
     def __init__(self, words, intweights, extweights,
             obstfactory=obstsearcher):

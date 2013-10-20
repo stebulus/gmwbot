@@ -287,8 +287,8 @@ class delayedobst(object):
         self._right = None
         self._obstfactory = obstfactory
         self._obst = None
-    def __call__(self, word, left=None, right=None):
-        if left != self._left or right != self._right \
+    def __call__(self, left, right):
+        if left < self._left or right > self._right \
                 or self._obst is None:
             # lft is index of first word to consider
             if left is None:
@@ -307,9 +307,7 @@ class delayedobst(object):
                 self._extweights[lft:rt+2])
             self._left = left
             self._right = right
-            self._search = searcher(self._obst)
-        for x in self._search(word, left, right):
-            yield x
+        return self._obst(left, right)
 
 class searchseq(object):
     def __init__(self, *searchers):
@@ -325,8 +323,8 @@ class searchseq(object):
 def topobst(words, weights, topwords, obstfactory=obstguesser):
     return searchseq(
         searcher(binaryguesser(topwords)),
-        delayedobst(words, weights, [0]*(len(weights)+1),
-            obstfactory=obstfactory)
+        searcher(delayedobst(words, weights, [0]*(len(weights)+1),
+            obstfactory=obstfactory))
         )
 
 class HTMLFormParser(HTMLParser):

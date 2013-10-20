@@ -233,7 +233,10 @@ class obstguesser_sjtbot2(obstguesser):
         else:
             j = bisect_left(self._words, right, 1, len(self._words)-1)
             rt = j-1
-        return self._words[self.root(lft,rt)]
+        r = self.root(lft,rt)
+        if r is None:
+            raise NoGuessError((left,right))
+        return self._words[r]
 
 class delayedobst(object):
     def __init__(self, words, intweights, extweights,

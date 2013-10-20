@@ -217,8 +217,6 @@ class obstguesser(object):
         if lft == rt:
             raise NoGuessError((left,right))
         return self._words[self.root(lft,rt)]
-def obstsearcher(words, intweights, extweights):
-    return searcher(obstguesser(words, intweights, extweights))
 class obstguesser_sjtbot2(object):
     def __init__(self, words, intweights, extweights):
         n = len(words)
@@ -274,8 +272,6 @@ class obstguesser_sjtbot2(object):
             j = bisect_left(self._words, right, 1, len(self._words)-1)
             rt = j-1
         return self._words[self.root(lft,rt)]
-def obstsearcher_sjtbot2(words, intweights, extweights):
-    return searcher(obstguesser_sjtbot2(words, intweights, extweights))
 
 class delayedobst(object):
     def __init__(self, words, intweights, extweights,

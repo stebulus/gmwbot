@@ -277,10 +277,9 @@ class delayedobst(object):
         return self._obst(left, right)
 
 def topobst(words, weights, topwords, obstfactory=obstguesser):
-    return searcher(
-        binaryguesser(topwords),
+    return [binaryguesser(topwords),
         delayedobst(words, weights, [0]*(len(weights)+1),
-            obstfactory=obstfactory))
+            obstfactory=obstfactory)]
 
 class HTMLFormParser(HTMLParser):
     def __init__(self):
@@ -389,7 +388,7 @@ def strat_sjtbot1():
     with open('8plus') as f:
         for line in f:
             words.append(line.strip().lower().split()[0])
-    return searcher(binaryguesser(words))
+    return [binaryguesser(words)]
 def load_topobst_data():
     topwords = []
     with open('topwords') as fp:
@@ -468,7 +467,7 @@ if __name__ == '__main__':
         action = sys.argv[2]
         if strategy not in strategies or action not in actions:
             usage()
-        search = strategies[strategy]()
+        search = searcher(*strategies[strategy]())
         action = actions[action]
         action(search, strategy, sys.argv[3:])
     except UsageError:

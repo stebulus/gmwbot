@@ -1,0 +1,46 @@
+GMW: GET http://example.com/?by=mock
+GMW: initial request
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: lackey
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: blimey
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: dismay
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: gaggle
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: leaderboard submission: WINNER!
+
+GMW: GET http://example.com/?by=mock
+GMW: initial request
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: lackey
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: robot
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: undulate
+
+GMW: GET http://example.com/?by=mock
+GMW: initial request
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: lackey
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: blimey
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: aaa
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: leaderboard submission: WINNER!
+
+GMW: GET http://example.com/?by=mock
+GMW: initial request
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: lackey
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: robot
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: undulate
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: guess: zzz
+GMW: POST http://example.com/%7Epahk/dictionary/guess.cgi
+GMW: leaderboard submission: WINNER!
+

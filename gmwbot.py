@@ -517,6 +517,28 @@ def action_test(search, stratname, args):
         else:
             print word, '!' + str(cc.count)
 
+@usage('WORD [NAME]')
+def action_mock(search, stratname, args):
+    if len(args) < 1:
+        usagefail()
+    if len(args) == 1:
+        name = None
+    elif len(args) == 2:
+        name = args[1]
+    else:
+        usagefail()
+    word = args[0].lower()
+    del args[:]
+    from gmwbottest import mockgmw, mockrequests
+    import sys
+    server = mockgmw(logfile=sys.stdout)
+    server.word = word
+    req = mockrequests(server)
+    gmw = gmwclient('http://example.com/', req.request,
+        by='mock', leaderboardname=name)
+    for x in search(gmw):
+        pass
+
 actions = dict(
     ((x[7:],globals()[x]) for x in globals()
         if x.startswith('action_'))

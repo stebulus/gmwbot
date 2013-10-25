@@ -481,7 +481,14 @@ strategies = dict(
         if x.startswith('strat_'))
     )
 
-def pahk(search, stratname, by):
+def pahk(search, by, args):
+    if len(args) == 0:
+        leaderboardname = None
+    elif len(args) == 1:
+        leaderboardname = args[1]
+        del args[1]
+    else:
+        usagefail()
     import requests
     def request(*args, **kwargs):
         config = kwargs.setdefault('config',{})
@@ -489,25 +496,21 @@ def pahk(search, stratname, by):
             config['verbose'] = sys.stderr
         return requests.request(*args, **kwargs)
     gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
-        by=by, leaderboardname=stratname)
+        by=by, leaderboardname=leaderboardname)
     print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
     for x in search(gmw):
         print x
 
-@usage('')
-def action_joon(search, stratname, args):
-    if args:
-        usagefail()
-    pahk(search, stratname, 'joon')
+@usage('[NAME]')
+def action_joon(search, args):
+    pahk(search, 'joon', args)
 
-@usage('')
-def action_mike(search, stratname, args):
-    if args:
-        usagefail()
-    pahk(search, stratname, 'mike')
+@usage('[NAME]')
+def action_mike(search, args):
+    pahk(search, 'mike', args)
 
 @usage('WORD [WORD ...]')
-def action_test(search, stratname, args):
+def action_test(search, args):
     for word in args:
         cc = cmpcount(word)
         for x in search(cc):
@@ -518,7 +521,7 @@ def action_test(search, stratname, args):
             print word, '!' + str(cc.count)
 
 @usage('WORD [NAME]')
-def action_mock(search, stratname, args):
+def action_mock(search, args):
     if len(args) < 1:
         usagefail()
     if len(args) == 1:
@@ -579,9 +582,7 @@ if __name__ == '__main__':
             guessers.extend(strategies[strat](args))
         search = searcher(*guessers)
         action = actions[args[0]]
-        action(search,
-            ' '.join(sys.argv[1:len(sys.argv)-len(args)]),
-            args[1:])
+        action(search, args[1:])
     except UsageError:
         sys.exit(2)
     except InputError:

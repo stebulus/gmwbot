@@ -428,11 +428,11 @@ def pahk(search, stratname, by):
         print x
 def action_joon(search, stratname, args):
     if args:
-        usage()
+        usagefail()
     pahk(search, stratname, 'joon')
 def action_mike(search, stratname, args):
     if args:
-        usage()
+        usagefail()
     pahk(search, stratname, 'mike')
 def action_test(search, stratname, args):
     for word in args:
@@ -446,7 +446,7 @@ actions = dict(
         if x.startswith('action_'))
     )
 
-def usage(msg=None):
+def usagefail(msg=None):
     import sys
     strats = strategies.keys()
     strats.sort()
@@ -462,11 +462,11 @@ if __name__ == '__main__':
     import sys
     try:
         if len(sys.argv) < 3:
-            usage()
+            usagefail()
         strategy = sys.argv[1]
         action = sys.argv[2]
         if strategy not in strategies or action not in actions:
-            usage()
+            usagefail()
         search = searcher(*strategies[strategy]())
         action = actions[action]
         action(search, strategy, sys.argv[3:])

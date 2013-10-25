@@ -462,7 +462,10 @@ def action_test(search, stratname, args):
         cc = cmpcount(word)
         for x in search(cc):
             print x
-        print word, cc.count
+        if x[0] is True:
+            print word, cc.count
+        else:
+            print word, '!' + str(cc.count)
 
 actions = dict(
     ((x[7:],globals()[x]) for x in globals()

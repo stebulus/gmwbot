@@ -490,14 +490,22 @@ def usagefail(msg=None):
 if __name__ == '__main__':
     import sys
     try:
-        if len(sys.argv) < 3:
-            usagefail()
-        strategy = sys.argv[1]
-        action = sys.argv[2]
-        if strategy not in strategies or action not in actions:
-            usagefail()
-        search = searcher(*strategies[strategy]())
-        action = actions[action]
-        action(search, strategy, sys.argv[3:])
+        args = sys.argv[1:]
+        guessers = []
+        while True:
+            if not args:
+                usagefail()
+            if args[0] in actions:
+                break
+            if args[0] not in strategies:
+                usagefail('unknown strategy %r' % args[0])
+            strat = args[0]
+            del args[0]
+            guessers.extend(strategies[strat](args))
+        search = searcher(*guessers)
+        action = actions[args[0]]
+        action(search,
+            ' '.join(sys.argv[1:len(sys.argv)-len(args)]),
+            args[1:])
     except UsageError:
         sys.exit(2)

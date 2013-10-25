@@ -426,6 +426,17 @@ def strat_sjtbot2(args):
 def strat_sjtbot3(args):
     return topobst(*load_topobst_data())
 
+@usage('WORDFILE')
+def strat_binary(args):
+    if not args:
+        usagefail()
+    words = []
+    with open(args[0]) as f:
+        for line in f:
+            words.append(line.rstrip())
+    del args[0]
+    return [binaryguesser(words)]
+
 strategies = dict(
     ((x[6:],globals()[x]) for x in globals()
         if x.startswith('strat_'))

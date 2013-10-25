@@ -394,14 +394,6 @@ def usage(argdescr):
 
 PAHK_URL='http://www.people.fas.harvard.edu/~pahk/dictionary/guess.cgi'
 
-@usage('')
-def strat_sjtbot1(args):
-    words = []
-    with open('8plus') as f:
-        for line in f:
-            words.append(line.strip().lower().split()[0])
-    return [binaryguesser(words)]
-
 def load_topobst_data():
     topwords = []
     with open('topwords') as fp:
@@ -436,6 +428,10 @@ def strat_binary(args):
             words.append(line.rstrip().lower().split(None,1)[0])
     del args[0]
     return [binaryguesser(words)]
+
+@usage('(= "binary 8plus")')
+def strat_sjtbot1(args):
+    return strat_binary(['8plus'])
 
 strategies = dict(
     ((x[6:],globals()[x]) for x in globals()

@@ -433,7 +433,7 @@ def strat_binary(args):
     words = []
     with open(args[0]) as f:
         for line in f:
-            words.append(line.rstrip())
+            words.append(line.rstrip().lower().split(None,1)[0])
     del args[0]
     return [binaryguesser(words)]
 

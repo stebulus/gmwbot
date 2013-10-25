@@ -17,6 +17,8 @@ class NonwordError(Error):
         self.response = response
 class NoGuessError(Error):
     pass
+class UsageError(Error):
+    pass
 
 class gmwclient(object):
     def __init__(self, url, request, by='joon', leaderboardname=None):
@@ -455,16 +457,19 @@ def usage(msg=None):
     print >>sys.stderr, 'usage:'
     print >>sys.stderr, '    %s (%s) (joon|mike)' % (sys.argv[0], strats)
     print >>sys.stderr, '    %s (%s) test WORD [WORD ...]' % (sys.argv[0], strats)
-    sys.exit(2)
+    raise UsageError()
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) < 3:
-        usage()
-    strategy = sys.argv[1]
-    action = sys.argv[2]
-    if strategy not in strategies or action not in actions:
-        usage()
-    search = strategies[strategy]()
-    action = actions[action]
-    action(search, strategy, sys.argv[3:])
+    try:
+        if len(sys.argv) < 3:
+            usage()
+        strategy = sys.argv[1]
+        action = sys.argv[2]
+        if strategy not in strategies or action not in actions:
+            usage()
+        search = strategies[strategy]()
+        action = actions[action]
+        action(search, strategy, sys.argv[3:])
+    except UsageError:
+        sys.exit(2)

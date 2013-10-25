@@ -413,11 +413,45 @@ strategies = dict(
         if x.startswith('strat_'))
     )
 
-def usage():
+def pahk(search, stratname, by):
+    import requests
+    def request(*args, **kwargs):
+        config = kwargs.setdefault('config',{})
+        if 'verbose' not in config:
+            config['verbose'] = sys.stderr
+        return requests.request(*args, **kwargs)
+    gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
+        by=by, leaderboardname=stratname)
+    print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
+    for x in search(gmw):
+        print x
+def action_joon(search, stratname, args):
+    if args:
+        usage()
+    pahk(search, 'joon')
+def action_mike(search, stratname, args):
+    if args:
+        usage()
+    pahk(search, 'mike')
+def action_test(search, stratname, args):
+    for word in args:
+        cc = cmpcount(word)
+        for x in search(cc):
+            print x
+        print word, cc.count
+
+actions = dict(
+    ((x[7:],globals()[x]) for x in globals()
+        if x.startswith('action_'))
+    )
+
+def usage(msg=None):
     import sys
     strats = strategies.keys()
     strats.sort()
     strats = '|'.join(strats)
+    if msg is not None:
+        print >>sys.stderr, msg
     print >>sys.stderr, 'usage:'
     print >>sys.stderr, '    %s (%s) (joon|mike)' % (sys.argv[0], strats)
     print >>sys.stderr, '    %s (%s) test WORD [WORD ...]' % (sys.argv[0], strats)
@@ -428,28 +462,9 @@ if __name__ == '__main__':
     if len(sys.argv) < 3:
         usage()
     strategy = sys.argv[1]
-    by = sys.argv[2]
-    if strategy not in strategies \
-            or (len(sys.argv) == 3 and by not in ['joon','mike']) \
-            or (len(sys.argv) >= 4 and by != 'test'):
+    action = sys.argv[2]
+    if strategy not in strategies or action not in actions:
         usage()
     search = strategies[strategy]()
-
-    if by == 'test':
-        for word in sys.argv[3:]:
-            cc = cmpcount(word)
-            for x in search(cc):
-                print x
-            print word, cc.count
-    else:
-        import requests
-        def request(*args, **kwargs):
-            config = kwargs.setdefault('config',{})
-            if 'verbose' not in config:
-                config['verbose'] = sys.stderr
-            return requests.request(*args, **kwargs)
-        gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
-            by=by, leaderboardname=strategy)
-        print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
-        for x in search(gmw):
-            print x
+    action = actions[action]
+    action(search, strategy, sys.argv[3:])

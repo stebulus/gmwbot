@@ -381,14 +381,27 @@ class cmpcount(object):
         self.count += 1
         return c
 
+class usagefunc(object):
+    def __init__(self, usage, func):
+        self.usage = usage
+        self.func = func
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+def usage(argdescr):
+    def u(f):
+        return usagefunc(argdescr, f)
+    return u
+
 PAHK_URL='http://www.people.fas.harvard.edu/~pahk/dictionary/guess.cgi'
 
-def strat_sjtbot1():
+@usage('')
+def strat_sjtbot1(args):
     words = []
     with open('8plus') as f:
         for line in f:
             words.append(line.strip().lower().split()[0])
     return [binaryguesser(words)]
+
 def load_topobst_data():
     topwords = []
     with open('topwords') as fp:
@@ -403,10 +416,14 @@ def load_topobst_data():
             words.append(word)
             weights.append(float(weight))
     return words, weights, topwords
-def strat_sjtbot2():
+
+@usage('')
+def strat_sjtbot2(args):
     return topobst(*load_topobst_data(),
         obstfactory=obstguesser_sjtbot2)
-def strat_sjtbot3():
+
+@usage('')
+def strat_sjtbot3(args):
     return topobst(*load_topobst_data())
 
 strategies = dict(
@@ -426,17 +443,6 @@ def pahk(search, stratname, by):
     print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
     for x in search(gmw):
         print x
-
-class usagefunc(object):
-    def __init__(self, usage, func):
-        self.usage = usage
-        self.func = func
-    def __call__(self, *args, **kwargs):
-        return self.func(*args, **kwargs)
-def usage(argdescr):
-    def u(f):
-        return usagefunc(argdescr, f)
-    return u
 
 @usage('')
 def action_joon(search, stratname, args):
@@ -465,14 +471,16 @@ actions = dict(
 
 def usagefail(msg=None):
     import sys
-    strats = strategies.keys()
-    strats.sort()
-    strats = '|'.join(strats)
     if msg is not None:
         print >>sys.stderr, msg
     print >>sys.stderr, 'usage:'
-    print >>sys.stderr, '    %s (%s) ACTION' % (sys.argv[0], strats)
-    print >>sys.stderr, 'where ACTION is one of'
+    print >>sys.stderr, '    %s STRATEGY ACTION' % (sys.argv[0],)
+    print >>sys.stderr, 'where STRATEGY is one of'
+    strats = strategies.keys()
+    strats.sort()
+    for s in strats:
+        print >>sys.stderr, '  ', s, strategies[s].usage
+    print >>sys.stderr, 'and ACTION is one of'
     acts = actions.keys()
     acts.sort()
     for a in acts:

@@ -428,11 +428,11 @@ def pahk(search, stratname, by):
 def action_joon(search, stratname, args):
     if args:
         usage()
-    pahk(search, 'joon')
+    pahk(search, stratname, 'joon')
 def action_mike(search, stratname, args):
     if args:
         usage()
-    pahk(search, 'mike')
+    pahk(search, stratname, 'mike')
 def action_test(search, stratname, args):
     for word in args:
         cc = cmpcount(word)

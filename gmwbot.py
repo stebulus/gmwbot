@@ -426,14 +426,31 @@ def pahk(search, stratname, by):
     print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
     for x in search(gmw):
         print x
+
+class usagefunc(object):
+    def __init__(self, usage, func):
+        self.usage = usage
+        self.func = func
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+def usage(argdescr):
+    def u(f):
+        return usagefunc(argdescr, f)
+    return u
+
+@usage('')
 def action_joon(search, stratname, args):
     if args:
         usagefail()
     pahk(search, stratname, 'joon')
+
+@usage('')
 def action_mike(search, stratname, args):
     if args:
         usagefail()
     pahk(search, stratname, 'mike')
+
+@usage('WORD [WORD ...]')
 def action_test(search, stratname, args):
     for word in args:
         cc = cmpcount(word)
@@ -454,8 +471,12 @@ def usagefail(msg=None):
     if msg is not None:
         print >>sys.stderr, msg
     print >>sys.stderr, 'usage:'
-    print >>sys.stderr, '    %s (%s) (joon|mike)' % (sys.argv[0], strats)
-    print >>sys.stderr, '    %s (%s) test WORD [WORD ...]' % (sys.argv[0], strats)
+    print >>sys.stderr, '    %s (%s) ACTION' % (sys.argv[0], strats)
+    print >>sys.stderr, 'where ACTION is one of'
+    acts = actions.keys()
+    acts.sort()
+    for a in acts:
+        print >>sys.stderr, '  ', a, actions[a].usage
     raise UsageError()
 
 if __name__ == '__main__':

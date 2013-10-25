@@ -1,0 +1,5 @@
+#!/bin/sh
+for word in gaggle taco aaa zzz; do
+    ./gmwbot.py binary $D/wordlist mock $word 'WINNER!'
+    echo
+done

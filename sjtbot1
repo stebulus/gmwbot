@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ x$1 == xtest ]; then
+    name=
+else
+    name=sjtbot1
+fi
+python gmwbot.py binary 8plus "$@" $name

@@ -17,6 +17,10 @@ class NonwordError(Error):
         self.response = response
 class NoGuessError(Error):
     pass
+class UsageError(Error):
+    pass
+class InputError(Error):
+    pass
 
 class gmwclient(object):
     def __init__(self, url, request, by='joon', leaderboardname=None):
@@ -275,10 +279,9 @@ class delayedobst(object):
         return self._obst(left, right)
 
 def topobst(words, weights, topwords, obstfactory=obstguesser):
-    return searcher(
-        binaryguesser(topwords),
+    return [binaryguesser(topwords),
         delayedobst(words, weights, [0]*(len(weights)+1),
-            obstfactory=obstfactory))
+            obstfactory=obstfactory)]
 
 class HTMLFormParser(HTMLParser):
     def __init__(self):
@@ -380,14 +383,19 @@ class cmpcount(object):
         self.count += 1
         return c
 
+class usagefunc(object):
+    def __init__(self, usage, func):
+        self.usage = usage
+        self.func = func
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+def usage(argdescr):
+    def u(f):
+        return usagefunc(argdescr, f)
+    return u
+
 PAHK_URL='http://www.people.fas.harvard.edu/~pahk/dictionary/guess.cgi'
 
-def strat_sjtbot1():
-    words = []
-    with open('8plus') as f:
-        for line in f:
-            words.append(line.strip().lower().split()[0])
-    return searcher(binaryguesser(words))
 def load_topobst_data():
     topwords = []
     with open('topwords') as fp:
@@ -402,54 +410,160 @@ def load_topobst_data():
             words.append(word)
             weights.append(float(weight))
     return words, weights, topwords
-def strat_sjtbot2():
-    return topobst(*load_topobst_data(),
-        obstfactory=obstguesser_sjtbot2)
-def strat_sjtbot3():
-    return topobst(*load_topobst_data())
+
+@usage('WORDFILE')
+def strat_binary(args):
+    if not args:
+        usagefail()
+    words = []
+    with open(args[0]) as f:
+        for line in f:
+            words.append(line.rstrip().lower().split(None,1)[0])
+    del args[0]
+    return [binaryguesser(words)]
+
+def impl_strat_obst(args, obstfactory=obstguesser):
+    if not args:
+        usagefail()
+    intweights = []
+    extweights = []
+    words = []
+    with open(args[0]) as f:
+        outer = True
+        for line in f:
+            line = line.rstrip().lower()
+            if ' ' in line:
+                if outer:
+                    extweights.append(0)
+                    outer = False
+                word, weight = line.split()
+                weight = float(weight)
+                words.append(word)
+                intweights.append(weight)
+            else:
+                if not outer:
+                    raise InputError('file %r: word and weight expected: %r' % (args[0], line))
+                extweights.append(float(line))
+            outer = not outer
+        if outer:
+            extweights.append(0)
+    del args[0]
+    return [delayedobst(words, intweights, extweights,
+        obstfactory=obstfactory)]
+
+@usage('WEIGHTFILE')
+def strat_obst(args):
+    return impl_strat_obst(args)
+@usage('WEIGHTFILE')
+def strat_obst_sjtbot2(args):
+    return impl_strat_obst(args, obstfactory=obstguesser_sjtbot2)
 
 strategies = dict(
     ((x[6:],globals()[x]) for x in globals()
         if x.startswith('strat_'))
     )
 
-def usage():
+def pahk(search, by, args):
+    if len(args) == 0:
+        leaderboardname = None
+    elif len(args) == 1:
+        leaderboardname = args[1]
+        del args[1]
+    else:
+        usagefail()
+    import requests
+    def request(*args, **kwargs):
+        config = kwargs.setdefault('config',{})
+        if 'verbose' not in config:
+            config['verbose'] = sys.stderr
+        return requests.request(*args, **kwargs)
+    gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
+        by=by, leaderboardname=leaderboardname)
+    print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
+    for x in search(gmw):
+        print x
+
+@usage('[NAME]')
+def action_joon(search, args):
+    pahk(search, 'joon', args)
+
+@usage('[NAME]')
+def action_mike(search, args):
+    pahk(search, 'mike', args)
+
+@usage('WORD [WORD ...]')
+def action_test(search, args):
+    for word in args:
+        cc = cmpcount(word)
+        for x in search(cc):
+            print x
+        if x[0] is True:
+            print word, cc.count
+        else:
+            print word, '!' + str(cc.count)
+
+@usage('WORD [NAME]')
+def action_mock(search, args):
+    if len(args) == 1:
+        name = None
+    elif len(args) == 2:
+        name = args[1]
+    else:
+        usagefail()
+    word = args[0].lower()
+    del args[:]
+    from gmwbottest import mockgmw, mockrequests
     import sys
+    server = mockgmw(logfile=sys.stdout)
+    server.word = word
+    req = mockrequests(server)
+    gmw = gmwclient('http://example.com/', req.request,
+        by='mock', leaderboardname=name)
+    for x in search(gmw):
+        pass
+
+actions = dict(
+    ((x[7:],globals()[x]) for x in globals()
+        if x.startswith('action_'))
+    )
+
+def usagefail(msg=None):
+    import sys
+    if msg is not None:
+        print >>sys.stderr, msg
+    print >>sys.stderr, 'usage:'
+    print >>sys.stderr, '    %s STRATEGY ACTION' % (sys.argv[0],)
+    print >>sys.stderr, 'where STRATEGY is one of'
     strats = strategies.keys()
     strats.sort()
-    strats = '|'.join(strats)
-    print >>sys.stderr, 'usage:'
-    print >>sys.stderr, '    %s (%s) (joon|mike)' % (sys.argv[0], strats)
-    print >>sys.stderr, '    %s (%s) test WORD [WORD ...]' % (sys.argv[0], strats)
-    sys.exit(2)
+    for s in strats:
+        print >>sys.stderr, '  ', s, strategies[s].usage
+    print >>sys.stderr, 'and ACTION is one of'
+    acts = actions.keys()
+    acts.sort()
+    for a in acts:
+        print >>sys.stderr, '  ', a, actions[a].usage
+    raise UsageError()
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) < 3:
-        usage()
-    strategy = sys.argv[1]
-    by = sys.argv[2]
-    if strategy not in strategies \
-            or (len(sys.argv) == 3 and by not in ['joon','mike']) \
-            or (len(sys.argv) >= 4 and by != 'test'):
-        usage()
-    search = strategies[strategy]()
-
-    if by == 'test':
-        for word in sys.argv[3:]:
-            cc = cmpcount(word)
-            for x in search(cc):
-                print x
-            print word, cc.count
-    else:
-        import requests
-        def request(*args, **kwargs):
-            config = kwargs.setdefault('config',{})
-            if 'verbose' not in config:
-                config['verbose'] = sys.stderr
-            return requests.request(*args, **kwargs)
-        gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
-            by=by, leaderboardname=strategy)
-        print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
-        for x in search(gmw):
-            print x
+    try:
+        args = sys.argv[1:]
+        guessers = []
+        while True:
+            if not args:
+                usagefail()
+            if args[0] in actions:
+                break
+            if args[0] not in strategies:
+                usagefail('unknown strategy %r' % args[0])
+            strat = args[0]
+            del args[0]
+            guessers.extend(strategies[strat](args))
+        search = searcher(*guessers)
+        action = actions[args[0]]
+        action(search, args[1:])
+    except UsageError:
+        sys.exit(2)
+    except InputError:
+        sys.exit(3)

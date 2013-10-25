@@ -14,7 +14,7 @@ with open('twlwordweight') as fp:
         words.append(word)
         weights.append(float(weight))
 
-search = gmwbot.topobst(words, weights, topwords)
+search = gmwbot.searcher(*gmwbot.topobst(words, weights, topwords))
 for x in search('vicissitudes'):
     print x
 print

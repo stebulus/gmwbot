@@ -416,10 +416,6 @@ def strat_sjtbot2(args):
     return topobst(*load_topobst_data(),
         obstfactory=obstguesser_sjtbot2)
 
-@usage('')
-def strat_sjtbot3(args):
-    return topobst(*load_topobst_data())
-
 @usage('WORDFILE')
 def strat_binary(args):
     if not args:
@@ -463,6 +459,13 @@ def strat_obst(args):
             extweights.append(0)
     del args[0]
     return [delayedobst(words, intweights, extweights)]
+
+@usage('(= binary topwords obst twlwordweight)')
+def strat_sjtbot3(args):
+    guessers = []
+    guessers.extend(strat_binary(['topwords']))
+    guessers.extend(strat_obst(['twlwordweight']))
+    return guessers
 
 strategies = dict(
     ((x[6:],globals()[x]) for x in globals()

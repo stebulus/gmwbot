@@ -1,0 +1,5 @@
+#!/bin/sh
+for x in a am d; do
+    ./gmwbot.py obst $D/weightlist test $x
+    echo
+done

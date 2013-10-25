@@ -19,6 +19,8 @@ class NoGuessError(Error):
     pass
 class UsageError(Error):
     pass
+class InputError(Error):
+    pass
 
 class gmwclient(object):
     def __init__(self, url, request, by='joon', leaderboardname=None):
@@ -433,6 +435,35 @@ def strat_binary(args):
 def strat_sjtbot1(args):
     return strat_binary(['8plus'])
 
+@usage('WEIGHTFILE')
+def strat_obst(args):
+    if not args:
+        usagefail()
+    intweights = []
+    extweights = []
+    words = []
+    with open(args[0]) as f:
+        outer = True
+        for line in f:
+            line = line.rstrip().lower()
+            if ' ' in line:
+                if outer:
+                    extweights.append(0)
+                    outer = False
+                word, weight = line.split()
+                weight = float(weight)
+                words.append(word)
+                intweights.append(weight)
+            else:
+                if not outer:
+                    raise InputError('file %r: word and weight expected: %r' % (args[0], line))
+                extweights.append(float(line))
+            outer = not outer
+        if outer:
+            extweights.append(0)
+    del args[0]
+    return [delayedobst(words, intweights, extweights)]
+
 strategies = dict(
     ((x[6:],globals()[x]) for x in globals()
         if x.startswith('strat_'))
@@ -519,3 +550,5 @@ if __name__ == '__main__':
             args[1:])
     except UsageError:
         sys.exit(2)
+    except InputError:
+        sys.exit(3)

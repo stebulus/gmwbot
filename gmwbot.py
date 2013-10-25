@@ -522,8 +522,6 @@ def action_test(search, args):
 
 @usage('WORD [NAME]')
 def action_mock(search, args):
-    if len(args) < 1:
-        usagefail()
     if len(args) == 1:
         name = None
     elif len(args) == 2:

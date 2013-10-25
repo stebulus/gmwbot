@@ -422,10 +422,6 @@ def strat_binary(args):
     del args[0]
     return [binaryguesser(words)]
 
-@usage('(= "binary 8plus")')
-def strat_sjtbot1(args):
-    return strat_binary(['8plus'])
-
 def impl_strat_obst(args, obstfactory=obstguesser):
     if not args:
         usagefail()
@@ -461,20 +457,6 @@ def strat_obst(args):
 @usage('WEIGHTFILE')
 def strat_obst_sjtbot2(args):
     return impl_strat_obst(args, obstfactory=obstguesser_sjtbot2)
-
-@usage('(= binary topwords obst_sjtbot2 twlwordweight)')
-def strat_sjtbot2(args):
-    guessers = []
-    guessers.extend(strat_binary(['topwords']))
-    guessers.extend(strat_obst_sjtbot2(['twlwordweight']))
-    return guessers
-
-@usage('(= binary topwords obst twlwordweight)')
-def strat_sjtbot3(args):
-    guessers = []
-    guessers.extend(strat_binary(['topwords']))
-    guessers.extend(strat_obst(['twlwordweight']))
-    return guessers
 
 strategies = dict(
     ((x[6:],globals()[x]) for x in globals()

@@ -1,7 +1,0 @@
-#!/usr/bin/env python
-import gmwbot
-words = ['a', 'b', 'c']
-# internal search for left will produce (1,2),
-# which should not be mistaken for (True,2)
-for x in gmwbot.binarysearcher(words)('b', left='aluminium'):
-    print x

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division
+from bisect import bisect_left, bisect_right
 from datetime import datetime
 from HTMLParser import HTMLParser
 from time import time, sleep
@@ -14,6 +15,12 @@ class NonwordError(Error):
             "gmw server says '%s' is not a word" % nonword)
         self.nonword = nonword
         self.response = response
+class NoGuessError(Error):
+    pass
+class UsageError(Error):
+    pass
+class InputError(Error):
+    pass
 
 class gmwclient(object):
     def __init__(self, url, request, by='joon', leaderboardname=None):
@@ -109,59 +116,53 @@ def throttled(mingap):  # for use as decorator
         return throttledfunc(mingap, func)
     return throttle
 
-class binarysearcher(object):
+class binaryguesser(object):
     def __init__(self, words):
-        self._words = [None] + words + [None]
-    def _indexsearch(self, word, left=None, right=None):
+        self._words = words
+    def __call__(self, left, right):
+        # index of sought word is strictly between i and j
         if left is None:
-            left = 0
+            i = -1
+        else:
+            # i is index of rightmost entry which is <= left
+            i = bisect_right(self._words, left)-1
         if right is None:
-            right = len(self._words)-1
-        yield (left, right)
-        while left+1 < right:
-            mid = (left+right)//2
-            c = cmp(word, self._words[mid])
-            if c == 0:
-                yield (True, mid)
-                break
-            elif c < 0:
-                right = mid
-            else:
-                left = mid
-            yield (left, right)
+            j = len(self._words)
+        else:
+            # j is index of leftmost entry which is >= right
+            j = bisect_left(self._words, right)
+        if i >= j:
+            raise ValueError((left,right))
+        if i == j-1:
+            raise NoGuessError((left,right))
+        return self._words[(i+j)//2]
+class searcher(object):
+    def __init__(self, *guessers):
+        self._guessers = guessers
     def __call__(self, word, left=None, right=None):
-        if left is None:
-            lft = 0
-        else:
-            i, j = self.index(left)
-            if i is True:
-                lft = j+1
-            else:
-                lft = i+1
-        if right is None:
-            rt = len(self._words)-1
-        else:
-            i, j = self.index(right)
-            rt = j+1
-        for i,j in self._indexsearch(word, lft, rt):
-            if i is True:
-                yield (True, self._words[j])
-            else:
-                yield (self._words[i], self._words[j])
-    def index(self, word):
-        for i,j in self._indexsearch(word):
-            pass
-        if i is True:
-            return i,j-1
-        else:
-            return i-1,j-1
+        for guesser in self._guessers:
+            while True:
+                yield (left, right)
+                try:
+                    guess = guesser(left, right)
+                except NoGuessError:
+                    break
+                else:
+                    c = cmp(word, guess)
+                    if c == 0:
+                        yield (True, guess)
+                        return
+                    elif c < 0:
+                        right = guess
+                    else:
+                        left = guess
 
 def array(n):
     a = []
     for i in range(n):
         a.append([None]*n)
     return a
-class obstsearcher(object):
+class obstguesser(object):
     def __init__(self, words, intweights, extweights):
         n = len(words)
         p = [None] + intweights  # for 1-indexing as in Knuth
@@ -200,83 +201,87 @@ class obstsearcher(object):
         return self._r[i][j]
     def weight(self,i,j):
         return self._w[i][j]
-    def __call__(self, word, left=None, right=None):
-        bin = binarysearcher(self._words[1:-1])
+    def __call__(self, left, right):
+        # Following Knuth's setup, root(lft,rt) is the root of the
+        # optimal binary search tree for internal weights p[lft+1]
+        # through p[rt] inclusive and external weights q[lft] through
+        # q[rt] inclusive, i.e., for words known to be strictly
+        # between words[lft] and words[rt+1].
         if left is None:
-            lft = 1
+            lft = 0
         else:
-            i,j = bin.index(left)
-            if i is True:
-                lft = j+2
-            else:
-                lft = j+1
+            # lft is index of rightmost entry which is >= left
+            i = bisect_right(self._words, left, 1, len(self._words)-1)
+            lft = i-1
         if right is None:
             rt = len(self._words)-2
         else:
-            i,j = bin.index(right)
-            rt = j
-        yield (self._words[lft-1], self._words[rt+1])
-        while lft <= rt:
-            mid = self.root(lft,rt)
-            r = self._words[mid]
-            c = cmp(word, r)
-            if c == 0:
-                yield (True, r)
-                break
-            elif c < 0:
-                rt = mid-1
+            # rt+1 is index of leftmost entry which is <= right
+            j = bisect_left(self._words, right, 1, len(self._words)-1)
+            rt = j-1
+        if lft == rt:
+            raise NoGuessError((left,right))
+        return self._words[self.root(lft,rt)]
+class obstguesser_sjtbot2(obstguesser):
+    def __call__(self, left, right):
+        # Buggy implementation, kept for backwards compatibility.
+        if left is None:
+            lft = 1
+        else:
+            i = bisect_left(self._words, left, 1, len(self._words)-1)
+            if self._words[i] == left:
+                lft = i+1
             else:
-                lft = mid+1
-            yield (self._words[lft-1], self._words[rt+1])
+                lft = i
+        if right is None:
+            rt = len(self._words)-2
+        else:
+            j = bisect_left(self._words, right, 1, len(self._words)-1)
+            rt = j-1
+        r = self.root(lft,rt)
+        if r is None:
+            raise NoGuessError((left,right))
+        return self._words[r]
+
 class delayedobst(object):
-    def __init__(self, words, intweights, extweights):
+    def __init__(self, words, intweights, extweights,
+            obstfactory=obstguesser):
         self._words = words
         self._intweights = intweights
         self._extweights = extweights
         self._left = None
         self._right = None
+        self._obstfactory = obstfactory
         self._obst = None
-    def __call__(self, word, left=None, right=None):
-        if left != self._left or right != self._right \
+    def __call__(self, left, right):
+        if (self._left is not None
+                    and (left is None or left < self._left)) \
+                or (self._right is not None
+                    and (right is None or right > self._right)) \
                 or self._obst is None:
-            bin = binarysearcher(self._words)
+            # lft is index of first word to consider
             if left is None:
                 lft = 0
             else:
-                i,j = bin.index(left)
-                if i is True:
-                    lft = j
-                else:
-                    lft = j-1
+                # lft is index of rightmost entry which is <= left
+                lft = bisect_right(self._words, left)-1
+            # rt is index of last word to consider
             if right is None:
                 rt = len(self._words)-1
             else:
-                i,j = bin.index(right)
-                rt = j
-            self._obst = obstsearcher(self._words[lft:rt+1],
+                # rt is index of leftmost entry which is >= right
+                rt = bisect_left(self._words, right)
+            self._obst = self._obstfactory(self._words[lft:rt+1],
                 self._intweights[lft:rt+1],
                 self._extweights[lft:rt+2])
             self._left = left
             self._right = right
-        for x in self._obst(word, left, right):
-            yield x
+        return self._obst(left, right)
 
-class searchseq(object):
-    def __init__(self, *searchers):
-        self._searchers = searchers
-    def __call__(self, word, left=None, right=None):
-        for search in self._searchers:
-            for a,b in search(word, left, right):
-                yield (a,b)
-                if a is True:
-                    return
-            left,right = a,b
-
-def topobst(words, weights, topwords):
-    return searchseq(
-        binarysearcher(topwords),
-        delayedobst(words, weights, [0]*(len(weights)+1))
-        )
+def topobst(words, weights, topwords, obstfactory=obstguesser):
+    return [binaryguesser(topwords),
+        delayedobst(words, weights, [0]*(len(weights)+1),
+            obstfactory=obstfactory)]
 
 class HTMLFormParser(HTMLParser):
     def __init__(self):
@@ -369,15 +374,29 @@ class cmplog(object):
         print '? %s %s' % (op, other)
         return c
 
+class cmpcount(object):
+    def __init__(self, cmpable):
+        self._cmpable = cmpable
+        self.count = 0
+    def __cmp__(self, other):
+        c = cmp(self._cmpable, other)
+        self.count += 1
+        return c
+
+class usagefunc(object):
+    def __init__(self, usage, func):
+        self.usage = usage
+        self.func = func
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+def usage(argdescr):
+    def u(f):
+        return usagefunc(argdescr, f)
+    return u
+
 PAHK_URL='http://www.people.fas.harvard.edu/~pahk/dictionary/guess.cgi'
 
-def strat_sjtbot1():
-    words = []
-    with open('8plus') as f:
-        for line in f:
-            words.append(line.strip().lower().split()[0])
-    return binarysearcher(words)
-def strat_sjtbot2():
+def load_topobst_data():
     topwords = []
     with open('topwords') as fp:
         for line in fp:
@@ -390,31 +409,68 @@ def strat_sjtbot2():
             word, weight = line.rstrip().split()
             words.append(word)
             weights.append(float(weight))
-    return topobst(words, weights, topwords)
+    return words, weights, topwords
+
+@usage('WORDFILE')
+def strat_binary(args):
+    if not args:
+        usagefail()
+    words = []
+    with open(args[0]) as f:
+        for line in f:
+            words.append(line.rstrip().lower().split(None,1)[0])
+    del args[0]
+    return [binaryguesser(words)]
+
+def impl_strat_obst(args, obstfactory=obstguesser):
+    if not args:
+        usagefail()
+    intweights = []
+    extweights = []
+    words = []
+    with open(args[0]) as f:
+        outer = True
+        for line in f:
+            line = line.rstrip().lower()
+            if ' ' in line:
+                if outer:
+                    extweights.append(0)
+                    outer = False
+                word, weight = line.split()
+                weight = float(weight)
+                words.append(word)
+                intweights.append(weight)
+            else:
+                if not outer:
+                    raise InputError('file %r: word and weight expected: %r' % (args[0], line))
+                extweights.append(float(line))
+            outer = not outer
+        if outer:
+            extweights.append(0)
+    del args[0]
+    return [delayedobst(words, intweights, extweights,
+        obstfactory=obstfactory)]
+
+@usage('WEIGHTFILE')
+def strat_obst(args):
+    return impl_strat_obst(args)
+@usage('WEIGHTFILE')
+def strat_obst_sjtbot2(args):
+    return impl_strat_obst(args, obstfactory=obstguesser_sjtbot2)
 
 strategies = dict(
     ((x[6:],globals()[x]) for x in globals()
         if x.startswith('strat_'))
     )
 
-def usage():
-    import sys
-    strats = strategies.keys()
-    strats.sort()
-    print >>sys.stderr, 'usage: %s (%s) (joon|mike)' \
-        % (sys.argv[0], '|'.join(strats))
-    sys.exit(2)
-
-if __name__ == '__main__':
-    import sys
-    if len(sys.argv) != 3:
-        usage()
-    strategy = sys.argv[1]
-    by = sys.argv[2]
-    if strategy not in strategies or by not in ['joon','mike']:
-        usage()
-    search = strategies[strategy]()
-
+def pahk(search, by, args):
+    if len(args) == 0:
+        leaderboardname = None
+    elif len(args) == 1:
+        leaderboardname = args[1]
+        del args[1]
+    else:
+        usagefail()
     import requests
     def request(*args, **kwargs):
         config = kwargs.setdefault('config',{})
@@ -422,7 +478,92 @@ if __name__ == '__main__':
             config['verbose'] = sys.stderr
         return requests.request(*args, **kwargs)
     gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
-        by=by, leaderboardname=strategy)
+        by=by, leaderboardname=leaderboardname)
     print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
     for x in search(gmw):
         print x
+
+@usage('[NAME]')
+def action_joon(search, args):
+    pahk(search, 'joon', args)
+
+@usage('[NAME]')
+def action_mike(search, args):
+    pahk(search, 'mike', args)
+
+@usage('WORD [WORD ...]')
+def action_test(search, args):
+    for word in args:
+        cc = cmpcount(word)
+        for x in search(cc):
+            print x
+        if x[0] is True:
+            print word, cc.count
+        else:
+            print word, '!' + str(cc.count)
+
+@usage('WORD [NAME]')
+def action_mock(search, args):
+    if len(args) == 1:
+        name = None
+    elif len(args) == 2:
+        name = args[1]
+    else:
+        usagefail()
+    word = args[0].lower()
+    del args[:]
+    from gmwbottest import mockgmw, mockrequests
+    import sys
+    server = mockgmw(logfile=sys.stdout)
+    server.word = word
+    req = mockrequests(server)
+    gmw = gmwclient('http://example.com/', req.request,
+        by='mock', leaderboardname=name)
+    for x in search(gmw):
+        pass
+
+actions = dict(
+    ((x[7:],globals()[x]) for x in globals()
+        if x.startswith('action_'))
+    )
+
+def usagefail(msg=None):
+    import sys
+    if msg is not None:
+        print >>sys.stderr, msg
+    print >>sys.stderr, 'usage:'
+    print >>sys.stderr, '    %s STRATEGY ACTION' % (sys.argv[0],)
+    print >>sys.stderr, 'where STRATEGY is one of'
+    strats = strategies.keys()
+    strats.sort()
+    for s in strats:
+        print >>sys.stderr, '  ', s, strategies[s].usage
+    print >>sys.stderr, 'and ACTION is one of'
+    acts = actions.keys()
+    acts.sort()
+    for a in acts:
+        print >>sys.stderr, '  ', a, actions[a].usage
+    raise UsageError()
+
+if __name__ == '__main__':
+    import sys
+    try:
+        args = sys.argv[1:]
+        guessers = []
+        while True:
+            if not args:
+                usagefail()
+            if args[0] in actions:
+                break
+            if args[0] not in strategies:
+                usagefail('unknown strategy %r' % args[0])
+            strat = args[0]
+            del args[0]
+            guessers.extend(strategies[strat](args))
+        search = searcher(*guessers)
+        action = actions[args[0]]
+        action(search, args[1:])
+    except UsageError:
+        sys.exit(2)
+    except InputError:
+        sys.exit(3)

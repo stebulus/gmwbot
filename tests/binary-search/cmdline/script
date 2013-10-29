@@ -1,0 +1,6 @@
+#!/bin/sh
+for word in gaggle taco aaa zzz; do
+    echo "Searching for '$word'"
+    ./gmwbot.py binary $D/wordlist test $word
+    echo
+done

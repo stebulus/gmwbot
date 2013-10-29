@@ -1,11 +1,10 @@
-(None, 'c')
-(None, 'b')
+(None, 'bl')
+('a', 'bl')
 ('a', 'b')
 
-('a', None)
-('a', 'c')
-('a', 'b')
+('am', None)
+('am', 'b')
 
-('a', 'c')
-('a', 'b')
+('al', 'bl')
+('al', 'b')
 

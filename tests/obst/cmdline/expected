@@ -1,0 +1,15 @@
+(None, None)
+(None, 'b')
+(True, 'a')
+a 2
+
+(None, None)
+(None, 'b')
+('a', 'b')
+am !2
+
+(None, None)
+('b', None)
+('c', None)
+d !2
+

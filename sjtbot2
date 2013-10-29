@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ x$1 == xtest ]; then
+    name=
+else
+    name=sjtbot2
+fi
+python gmwbot.py binary topwords obst_sjtbot2 twlwordweight "$@" $name

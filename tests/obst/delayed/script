@@ -2,11 +2,11 @@
 from string import ascii_lowercase
 import gmwbot
 
-search = gmwbot.delayedobst(
+search = gmwbot.searcher(gmwbot.delayedobst(
     list(ascii_lowercase),
     [1]*len(ascii_lowercase),
     [1]*(len(ascii_lowercase)+1)
-    )
+    ))
 for x in search('r', left='m', right='t'):
     print x
 print

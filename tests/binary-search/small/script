@@ -12,7 +12,7 @@ words = [
     'undulate',
     'zzz',
     ]
-search = gmwbot.binarysearcher(words)
+search = gmwbot.searcher(gmwbot.binaryguesser(words))
 for word in [words[3], 'taco', words[0], words[-1]]:
     print 'Searching for', repr(word)
     for x in search(word):

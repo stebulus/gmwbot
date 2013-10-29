@@ -1,0 +1,30 @@
+Searching for 'gaggle'
+(None, None)
+(None, 'lackey')
+('blimey', 'lackey')
+('dismay', 'lackey')
+(True, 'gaggle')
+gaggle 4
+
+Searching for 'taco'
+(None, None)
+('lackey', None)
+('robot', None)
+('robot', 'undulate')
+taco !3
+
+Searching for 'aaa'
+(None, None)
+(None, 'lackey')
+(None, 'blimey')
+(True, 'aaa')
+aaa 3
+
+Searching for 'zzz'
+(None, None)
+('lackey', None)
+('robot', None)
+('undulate', None)
+(True, 'zzz')
+zzz 4
+

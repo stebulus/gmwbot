@@ -4,4 +4,4 @@ if [ x$1 == xtest ]; then
 else
     name=sjtbot3
 fi
-python gmwbot.py binary topwords obst twlwordweight "$@" $name
+python gmwbot.py binary topwords3 obst twlwordweight3 binary twl "$@" $name

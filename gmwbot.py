@@ -467,8 +467,8 @@ def pahk(search, by, args):
     if len(args) == 0:
         leaderboardname = None
     elif len(args) == 1:
-        leaderboardname = args[1]
-        del args[1]
+        leaderboardname = args[0]
+        del args[0]
     else:
         usagefail()
     import requests

@@ -472,12 +472,7 @@ def pahk(search, by, args):
     else:
         usagefail()
     import requests
-    def request(*args, **kwargs):
-        config = kwargs.setdefault('config',{})
-        if 'verbose' not in config:
-            config['verbose'] = sys.stderr
-        return requests.request(*args, **kwargs)
-    gmw = gmwclient(PAHK_URL, throttledfunc(60, request),
+    gmw = gmwclient(PAHK_URL, throttledfunc(60, requests.request),
         by=by, leaderboardname=leaderboardname)
     print 'wordtime:', gmw.wordtime.strftime('%Y-%m-%dT%H:%M')
     for x in search(gmw):
